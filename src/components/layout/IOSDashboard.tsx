@@ -13,6 +13,11 @@ import { NotesDashboard } from '@/components/notes/NotesDashboard';
 import { BucketListManager } from '@/components/bucketList/BucketListManager';
 import { BucketListStats } from '@/components/bucketList/BucketListStats';
 import { useAnimation } from '@/components/animations/AnimationProvider';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { notificationService } from '@/services/supabaseNotificationService';
+import { NotificationTriggers } from '@/services/notificationTriggers';
+import { showNotificationToast } from '@/components/notifications/NotificationToastManager';
 import { 
   Clock,
   StickyNote,
@@ -65,6 +70,10 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   partnerName 
 }) => {
   const { showConfetti, showCheckmark } = useAnimation();
+  
+  // Notification state
+  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   
   const [tasks, setTasks] = useState([
     { id: 1, text: 'Upload Design', completed: true, category: 'work', priority: 'high' },
@@ -123,6 +132,18 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   const [editNote, setEditNote] = useState({ title: '', content: '', category: 'random' });
   const [editEvent, setEditEvent] = useState({ time: '', event: '', type: 'work', duration: '' });
   const [editExpense, setEditExpense] = useState({ category: '', amount: '', date: '' });
+
+  // Notification subscription
+  useEffect(() => {
+    const unsubscribeUnreadCount = notificationService.subscribeToUnreadCount(setUnreadCount);
+    
+    // Load initial count
+    notificationService.getUnreadCount().then(setUnreadCount);
+    
+    return () => {
+      unsubscribeUnreadCount();
+    };
+  }, []);
   
   // Filter and sort states
   const [taskFilter, setTaskFilter] = useState('all');
@@ -185,38 +206,69 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   }, [streaks]);
 
   // Task management
-  const toggleTask = (id: number) => {
+  const toggleTask = async (id: number) => {
     const task = tasks.find(t => t.id === id);
     if (task && !task.completed) {
       showConfetti();
       setStreaks(prev => ({ ...prev, tasksCompleted: prev.tasksCompleted + 1 }));
+      
+      // Trigger completion notification
+      await NotificationTriggers.notifyTaskCompleted(id.toString(), task.text, userName);
+      
+      // Show toast notification
+      showNotificationToast(
+        'Task Completed! 🎉',
+        `"${task.text}" has been completed`,
+        'success'
+      );
     }
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
     ));
   };
 
-  const addTask = () => {
+  const addTask = async () => {
     if (!newTask.trim()) {
       setErrors({ task: 'Task text is required' });
       return;
     }
     
-    setTasks([...tasks, { 
+    const taskId = Date.now().toString();
+    const newTaskObj = { 
       id: Date.now(), 
       text: newTask, 
       completed: false, 
       category: 'general',
       priority: 'medium'
-    }]);
+    };
+    
+    setTasks([...tasks, newTaskObj]);
     setNewTask('');
     setShowAddTask(false);
     setErrors({});
     showCheckmark();
+    
+    // Trigger notification
+    await NotificationTriggers.notifyTaskCreated(taskId, newTask);
+    
+    // Show toast notification
+    showNotificationToast(
+      'Task Created! ✅',
+      `"${newTask}" has been added to your tasks`,
+      'success'
+    );
   };
 
   const deleteTask = (id: number) => {
+    const task = tasks.find(t => t.id === id);
     setTasks(tasks.filter(task => task.id !== id));
+    
+    // Show toast notification
+    showNotificationToast(
+      'Task Deleted! 🗑️',
+      `"${task?.text || 'Task'}" has been removed`,
+      'info'
+    );
   };
 
   const startEditTask = (id: number) => {
@@ -258,7 +310,7 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   };
 
   // Note management
-  const addNote = () => {
+  const addNote = async () => {
     if (!newNote.title.trim()) {
       setErrors({ noteTitle: 'Note title is required' });
       return;
@@ -268,21 +320,42 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
       return;
     }
     
-    setNotes([...notes, { 
+    const noteId = Date.now().toString();
+    const newNoteObj = { 
       id: Date.now(), 
       ...newNote, 
       category: 'random',
       starred: false
-    }]);
+    };
+    
+    setNotes([...notes, newNoteObj]);
     setNewNote({ title: '', content: '' });
     setShowAddNote(false);
     setStreaks(prev => ({ ...prev, notesShared: prev.notesShared + 1 }));
     setErrors({});
     showCheckmark();
+    
+    // Trigger notification
+    await NotificationTriggers.notifyNoteCreated(noteId, newNote.title);
+    
+    // Show toast notification
+    showNotificationToast(
+      'Note Created! 📝',
+      `"${newNote.title}" has been added to your notes`,
+      'success'
+    );
   };
 
   const deleteNote = (id: number) => {
+    const note = notes.find(n => n.id === id);
     setNotes(notes.filter(note => note.id !== id));
+    
+    // Show toast notification
+    showNotificationToast(
+      'Note Deleted! 🗑️',
+      `"${note?.title || 'Note'}" has been removed`,
+      'info'
+    );
   };
 
   const toggleStar = (id: number) => {
@@ -403,7 +476,7 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   };
 
   // Expense management
-  const addExpense = () => {
+  const addExpense = async () => {
     if (!newExpense.category.trim()) {
       setErrors({ expenseCategory: 'Expense category is required' });
       return;
@@ -417,21 +490,43 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
       return;
     }
     
-    setExpenses([...expenses, { 
+    const expenseId = Date.now().toString();
+    const amount = parseFloat(newExpense.amount);
+    const newExpenseObj = { 
       id: Date.now(), 
       category: newExpense.category,
-      amount: parseFloat(newExpense.amount),
+      amount: amount,
       date: newExpense.date || 'Today',
       trend: 'stable'
-    }]);
+    };
+    
+    setExpenses([...expenses, newExpenseObj]);
     setNewExpense({ category: '', amount: '', date: '' });
     setShowAddExpense(false);
     setErrors({});
     showCheckmark();
+    
+    // Trigger notification
+    await NotificationTriggers.notifyExpenseAdded(expenseId, amount, newExpense.category);
+    
+    // Show toast notification
+    showNotificationToast(
+      'Expense Added! 💰',
+      `$${amount} for ${newExpense.category} has been recorded`,
+      'success'
+    );
   };
 
   const deleteExpense = (id: number) => {
+    const expense = expenses.find(e => e.id === id);
     setExpenses(expenses.filter(expense => expense.id !== id));
+    
+    // Show toast notification
+    showNotificationToast(
+      'Expense Deleted! 🗑️',
+      `$${expense?.amount || 0} for ${expense?.category || 'expense'} has been removed`,
+      'info'
+    );
   };
 
   const startEditExpense = (id: number) => {
@@ -602,6 +697,26 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
               onClick={() => setShowSearch(true)}
               className="min-h-[44px] min-w-[44px]"
             />
+            
+            {/* Notification Bell */}
+            <div className="relative">
+              <NeumorphicButton 
+                variant="secondary" 
+                size="sm"
+                onClick={() => setIsNotificationCenterOpen(true)}
+                className={`min-h-[44px] min-w-[44px] ${unreadCount > 0 ? 'ring-2 ring-blue-200' : ''}`}
+              >
+                <Bell className="h-4 w-4" />
+              </NeumorphicButton>
+              
+              {/* Unread Count Badge */}
+              {unreadCount > 0 && (
+                <div className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </div>
+              )}
+            </div>
+            
             <NeumorphicCard 
               variant="elevated" 
               size="sm" 
@@ -1126,6 +1241,13 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
           </NeumorphicCard>
         </div>
       )}
+
+      {/* Notification Center Modal */}
+      <NotificationCenter
+        isOpen={isNotificationCenterOpen}
+        onClose={() => setIsNotificationCenterOpen(false)}
+      />
+
     </div>
   );
 };

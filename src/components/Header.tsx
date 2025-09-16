@@ -21,6 +21,7 @@ import {
   Users
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { NotificationBell } from './notifications/NotificationBell';
 
 interface HeaderProps {
   userName?: string;
@@ -96,14 +97,7 @@ export function Header({ userName, partnerName, onMenuClick, onNotificationClick
         {/* Right Section */}
         <div className="flex items-center gap-2">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative" onClick={onNotificationClick}>
-            <Bell className="w-5 h-5" />
-            {notifications > 0 && (
-              <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-coral border-0 text-xs p-0 flex items-center justify-center">
-                {notifications}
-              </Badge>
-            )}
-          </Button>
+          <NotificationBell />
 
           {/* User Menu */}
           <DropdownMenu>
