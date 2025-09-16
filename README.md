@@ -1,4 +1,3 @@
-nvm#installing-and-updating)
 
 Follow these steps:
 
@@ -15,4 +14,14 @@ npm i
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
+Key Components Included:
+📱 Mobile App Setup (iOS & Android)
+�� iOS Neumorphism UI Design
+🔐 Complete Authentication System
+📊 Task Management & Collaboration
+💰 Finance Planning & Tracking
+📅 Schedule Management
+📝 Notes & Reminders
+🎯 Bucket List Management
+🔥 Streaks & Engagement
+🚀 Backend API with Real-time Features
