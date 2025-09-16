@@ -207,21 +207,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ className = '' }) => {
             {/* Form */}
             {renderForm()}
 
-            {/* Demo Info */}
-            {mode === 'login' && (
-              <div className="mt-8 text-center">
-                <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
-                  <p className="text-sm text-gray-600 mb-2">
-                    <strong>Demo Mode:</strong> Use the credentials above to explore the app
-                  </p>
-                  <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                    <span>• Full functionality</span>
-                    <span>• Sample data</span>
-                    <span>• No real accounts</span>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

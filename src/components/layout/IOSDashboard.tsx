@@ -601,7 +601,7 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   const handleVoiceAssistant = () => {
     showCheckmark();
     setTimeout(() => {
-      alert('Voice assistant activated! (This is a demo)');
+      // Voice assistant feature coming soon
     }, 1000);
   };
 

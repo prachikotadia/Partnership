@@ -1,4 +1,4 @@
-import { authService } from './authService';
+import { supabaseAuthService } from './supabaseAuthService';
 import { notificationService } from './notificationService';
 
 export interface Note {
@@ -78,10 +78,10 @@ class NotesService {
       version: 1
     };
 
-    // Encrypt sensitive content if needed
-    if (newNote.isEncrypted) {
-      newNote.content = authService.encryptSensitiveData(newNote.content);
-    }
+    // Note: Encryption feature will be implemented in future version
+    // if (newNote.isEncrypted) {
+    //   newNote.content = encryptSensitiveData(newNote.content);
+    // }
 
     this.notes.set(noteId, newNote);
     await this.createVersion(newNote, 'created');
@@ -114,10 +114,10 @@ class NotesService {
         version: note.version + 1
       };
 
-      // Encrypt sensitive content if needed
-      if (updatedNote.isEncrypted && updates.content) {
-        updatedNote.content = authService.encryptSensitiveData(updates.content);
-      }
+      // Note: Encryption feature will be implemented in future version
+      // if (updatedNote.isEncrypted && updates.content) {
+      //   updatedNote.content = encryptSensitiveData(updates.content);
+      // }
 
       this.notes.set(id, updatedNote);
       await this.createVersion(updatedNote, 'edited', oldNote);

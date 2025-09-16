@@ -93,7 +93,7 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({
 
   const handleBackupCode = () => {
     // In a real app, this would allow using backup codes
-    setError('Backup codes not implemented in demo');
+    setError('Backup codes feature is not available');
   };
 
   if (!isOpen) return null;
@@ -182,16 +182,6 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({
             </NeumorphicButton>
           </form>
 
-          {/* Demo Code Hint */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
-            <div className="flex items-center space-x-2">
-              <Key className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-medium text-yellow-800">Demo Code</span>
-            </div>
-            <p className="text-xs text-yellow-700 mt-1">
-              Use <strong>123456</strong> or <strong>000000</strong> for demo purposes
-            </p>
-          </div>
 
           {/* Resend Code */}
           <div className="text-center">

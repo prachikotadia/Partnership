@@ -1,4 +1,4 @@
-import { authService } from './authService';
+import { supabaseAuthService } from './supabaseAuthService';
 import { notificationService } from './notificationService';
 
 export interface Expense {

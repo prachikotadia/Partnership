@@ -235,7 +235,7 @@ export const GlassmorphismDashboard: React.FC<GlassmorphismDashboardProps> = ({
     showCheckmark();
     // Simulate voice assistant activation
     setTimeout(() => {
-      alert('Voice assistant activated! (This is a demo)');
+      // Voice assistant feature coming soon
     }, 1000);
   };
 

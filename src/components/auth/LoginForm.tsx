@@ -19,7 +19,6 @@ import { NeumorphicButton } from '@/components/ui/neumorphic-button';
 import { NeumorphicInput } from '@/components/ui/neumorphic-input';
 import { TwoFactorModal } from './TwoFactorModal';
 import { MagicLinkModal } from './MagicLinkModal';
-import { DemoCredentials } from './DemoCredentials';
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
@@ -105,14 +104,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           <p className="text-gray-600">Sign in to continue your journey together</p>
         </div>
 
-        {/* Demo Credentials */}
-        <DemoCredentials
-          onCredentialSelect={(email, password) => {
-            setFormData(prev => ({ ...prev, email, password }));
-            setError('');
-            setSuccess('');
-          }}
-        />
 
         {/* Error/Success Messages */}
         {error && (
