@@ -269,7 +269,7 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
             <div className={`font-medium ${item.isCompleted ? 'line-through' : ''}`}>
               {item.title}
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-700">
               {formatDate(item.startDate)} {!item.allDay && formatTime(item.startDate)}
             </div>
           </div>
@@ -313,7 +313,7 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
-              <h3 className={`font-semibold text-lg ${item.isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+              <h3 className={`font-semibold text-lg ${item.isCompleted ? 'line-through text-gray-700' : 'text-gray-900'}`}>
                 {item.title}
               </h3>
               {item.mood && (
@@ -359,7 +359,7 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
         </div>
 
         {/* Time and Location */}
-        <div className="flex items-center space-x-4 text-sm text-gray-500">
+        <div className="flex items-center space-x-4 text-sm text-gray-700">
           <div className="flex items-center space-x-1">
             <Clock className="h-4 w-4" />
             <span>{formatDateTime(item.startDate)}</span>
@@ -424,7 +424,7 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
 
         {/* Reminder Settings */}
         {item.reminderSettings.enabled && (
-          <div className="flex items-center space-x-1 text-sm text-gray-500">
+          <div className="flex items-center space-x-1 text-sm text-gray-700">
             <Bell className="h-4 w-4" />
             <span>
               Reminder: {item.reminderSettings.daysBefore > 0 && `${item.reminderSettings.daysBefore} days `}
@@ -437,7 +437,7 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
 
         {/* Attachments */}
         {item.attachments.length > 0 && (
-          <div className="flex items-center space-x-1 text-sm text-gray-500">
+          <div className="flex items-center space-x-1 text-sm text-gray-700">
             <Tag className="h-4 w-4" />
             <span>{item.attachments.length} attachment{item.attachments.length > 1 ? 's' : ''}</span>
           </div>

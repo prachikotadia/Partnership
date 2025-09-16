@@ -494,7 +494,7 @@ export const BucketListManager: React.FC<BucketListManagerProps> = ({ className 
         <NeumorphicCard variant="elevated" className="p-8 text-center">
           <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No bucket list items found</h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-800 mb-4">
             {searchQuery || Object.keys(filter).length > 0 
               ? 'Try adjusting your search or filters'
               : 'Start adding your dreams and goals!'

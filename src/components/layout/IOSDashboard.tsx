@@ -832,7 +832,7 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
                       <div className="text-sm font-medium text-gray-900">{item.time}</div>
                       <div>
                         <div className="text-sm font-semibold text-gray-900">{item.event}</div>
-                        <div className="text-xs text-gray-500">{item.duration}</div>
+                        <div className="text-xs text-gray-700">{item.duration}</div>
                       </div>
                     </div>
                     <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -878,7 +878,7 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-sm font-semibold text-gray-900">{expense.category}</div>
-                      <div className="text-xs text-gray-500">{expense.date}</div>
+                      <div className="text-xs text-gray-700">{expense.date}</div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="text-sm font-bold text-gray-900">${expense.amount}</div>
@@ -923,21 +923,21 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Daily Streak</span>
-                <span className="text-sm text-gray-500">{streaks.dailyCheckIn} days</span>
+                <span className="text-sm text-gray-700">{streaks.dailyCheckIn} days</span>
               </div>
               <NeumorphicProgress value={streaks.dailyCheckIn} max={30} color="blue" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Tasks Completed</span>
-                <span className="text-sm text-gray-500">{streaks.tasksCompleted}/20</span>
+                <span className="text-sm text-gray-700">{streaks.tasksCompleted}/20</span>
               </div>
               <NeumorphicProgress value={streaks.tasksCompleted} max={20} color="green" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Notes Shared</span>
-                <span className="text-sm text-gray-500">{streaks.notesShared}/10</span>
+                <span className="text-sm text-gray-700">{streaks.notesShared}/10</span>
               </div>
               <NeumorphicProgress value={streaks.notesShared} max={10} color="purple" />
             </div>

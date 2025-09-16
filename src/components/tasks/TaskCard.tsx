@@ -207,7 +207,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 )}
               </button>
               
-              <h3 className={`font-semibold text-gray-900 ${task.status === 'completed' ? 'line-through text-gray-500' : ''} ${compact ? 'text-sm' : 'text-base'}`}>
+              <h3 className={`font-semibold text-gray-900 ${task.status === 'completed' ? 'line-through text-gray-700' : ''} ${compact ? 'text-sm' : 'text-base'}`}>
                 {task.title}
               </h3>
             </div>
@@ -251,7 +251,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         {/* Due Date */}
         {task.dueDate && (
-          <div className={`flex items-center space-x-1 text-sm ${isOverdue ? 'text-red-500' : 'text-gray-500'}`}>
+          <div className={`flex items-center space-x-1 text-sm ${isOverdue ? 'text-red-500' : 'text-gray-700'}`}>
             <Calendar className="h-4 w-4" />
             <span>
               {new Date(task.dueDate).toLocaleDateString()}
@@ -307,7 +307,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         {task.attachments.length > 0 && (
           <div className="flex items-center space-x-1">
             <Paperclip className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-700">
               {task.attachments.length} attachment{task.attachments.length > 1 ? 's' : ''}
             </span>
           </div>
@@ -344,7 +344,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                         <Circle className="h-4 w-4 text-gray-400 hover:text-green-500" />
                       )}
                     </button>
-                    <span className={`text-sm ${subtask.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                    <span className={`text-sm ${subtask.completed ? 'line-through text-gray-700' : 'text-gray-700'}`}>
                       {subtask.title}
                     </span>
                     <NeumorphicButton

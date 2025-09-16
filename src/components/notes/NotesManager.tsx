@@ -472,7 +472,7 @@ export const NotesManager: React.FC<NotesManagerProps> = ({ className = '' }) =>
                 <h3 className={`font-semibold text-lg ${note.isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
                   {note.title}
                 </h3>
-                <p className="text-sm text-gray-500">{note.author} • {formatDate(note.updatedAt)}</p>
+                <p className="text-sm text-gray-700">{note.author} • {formatDate(note.updatedAt)}</p>
               </div>
             </div>
 
@@ -843,7 +843,7 @@ export const NotesManager: React.FC<NotesManagerProps> = ({ className = '' }) =>
         <NeumorphicCard variant="inset" className="p-8 text-center">
           <StickyNote className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No notes found</h3>
-          <p className="text-gray-500 mb-4">
+          <p className="text-gray-700 mb-4">
             {searchQuery || Object.values(filter).some(f => Array.isArray(f) ? f.length > 0 : f !== undefined)
               ? 'Try adjusting your search or filters'
               : 'Create your first note to get started'

@@ -267,7 +267,7 @@ export const BucketListCard: React.FC<BucketListCardProps> = ({
                         onUpdate(item.id, { status: item.status === 'completed' ? 'in-progress' : 'completed' });
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors text-gray-900"
                     >
                       {item.status === 'completed' ? 'Mark Incomplete' : 'Mark Complete'}
                     </button>
@@ -276,7 +276,7 @@ export const BucketListCard: React.FC<BucketListCardProps> = ({
                         onViewDetails(item);
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors text-gray-900"
                     >
                       View Details
                     </button>
@@ -328,7 +328,7 @@ export const BucketListCard: React.FC<BucketListCardProps> = ({
                         onUpdate(item.id, { status: item.status === 'completed' ? 'in-progress' : 'completed' });
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors text-gray-900"
                     >
                       {item.status === 'completed' ? 'Mark Incomplete' : 'Mark Complete'}
                     </button>
@@ -337,7 +337,7 @@ export const BucketListCard: React.FC<BucketListCardProps> = ({
                         onViewDetails(item);
                         setShowMenu(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-lg transition-colors text-gray-900"
                     >
                       View Details
                     </button>

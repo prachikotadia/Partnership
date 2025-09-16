@@ -422,7 +422,7 @@ export function StreaksEngagement() {
               {checkIns.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
                   <MessageCircle className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-sm sm:text-base text-gray-500">No check-ins yet. Start your streak today!</p>
+                  <p className="text-sm sm:text-base text-gray-700">No check-ins yet. Start your streak today!</p>
                 </div>
               ) : (
                 checkIns.slice(0, 5).map((checkIn) => (
@@ -432,7 +432,7 @@ export function StreaksEngagement() {
                         <span className="text-xl sm:text-2xl flex-shrink-0">{getMoodIcon(checkIn.mood)}</span>
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-sm sm:text-base truncate">{checkIn.mood.charAt(0).toUpperCase() + checkIn.mood.slice(1)}</div>
-                          <div className="text-xs sm:text-sm text-gray-500">
+                          <div className="text-xs sm:text-sm text-gray-700">
                             {new Date(checkIn.createdAt).toLocaleDateString()}
                           </div>
                         </div>
@@ -467,7 +467,7 @@ export function StreaksEngagement() {
               {streaks.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
                   <Flame className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-sm sm:text-base text-gray-500">No active streaks. Start building your habits!</p>
+                  <p className="text-sm sm:text-base text-gray-700">No active streaks. Start building your habits!</p>
                 </div>
               ) : (
                 streaks.map((streak) => {
@@ -496,7 +496,7 @@ export function StreaksEngagement() {
                           className="h-2"
                         />
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-500 mt-2">
+                      <div className="text-xs sm:text-sm text-gray-700 mt-2">
                         Best: {streak.longestStreak} days
                       </div>
                     </div>
@@ -540,7 +540,7 @@ export function StreaksEngagement() {
                   <div className="flex justify-between items-center gap-2">
                     <span className="text-xs sm:text-sm font-medium">{achievement.points} points</span>
                     {achievement.isUnlocked && achievement.unlockedAt && (
-                      <span className="text-xs text-gray-500 truncate">
+                      <span className="text-xs text-gray-700 truncate">
                         Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
                       </span>
                     )}

@@ -330,7 +330,7 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
                 ), currentCurrency
               )}
             </div>
-            <div className="text-sm text-gray-600">Monthly Expenses</div>
+            <div className="text-sm text-gray-800">Monthly Expenses</div>
           </NeumorphicCard>
           
           <NeumorphicCard variant="inset" className="p-4 text-center">
@@ -344,7 +344,7 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
             <div className="text-2xl font-bold text-purple-600">
               {bigExpenses.length}
             </div>
-            <div className="text-sm text-gray-600">Big Expenses</div>
+            <div className="text-sm text-gray-800">Big Expenses</div>
           </NeumorphicCard>
           
           <NeumorphicCard variant="inset" className="p-4 text-center">
@@ -365,9 +365,9 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
                 <div key={category} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className={`w-3 h-3 rounded-full ${getCategoryColor(category).replace('bg-', 'bg-').replace('text-', 'text-')}`}></div>
-                    <span className="text-sm font-medium capitalize">{category}</span>
+                    <span className="text-sm font-medium capitalize text-gray-900">{category}</span>
                   </div>
-                  <span className="text-sm font-bold">
+                  <span className="text-sm font-bold text-gray-900">
                     {financeService.formatCurrency(amount, currentCurrency)}
                   </span>
                 </div>
@@ -383,7 +383,7 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
                 <div className="text-3xl font-bold text-green-600">
                   {savingsProgress.percentage.toFixed(1)}%
                 </div>
-                <div className="text-sm text-gray-600">of total savings goals</div>
+                <div className="text-sm text-gray-800">of total savings goals</div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
@@ -391,7 +391,7 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
                   style={{ width: `${Math.min(savingsProgress.percentage, 100)}%` }}
                 ></div>
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-gray-800">
                 <span>{financeService.formatCurrency(savingsProgress.totalCurrent, currentCurrency)}</span>
                 <span>{financeService.formatCurrency(savingsProgress.totalTarget, currentCurrency)}</span>
               </div>
@@ -410,13 +410,13 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
                     <span className="text-xs font-bold">{expense.category.charAt(0).toUpperCase()}</span>
                   </div>
                   <div>
-                    <div className="font-medium capitalize">{expense.category}</div>
-                    <div className="text-sm text-gray-500">{expense.paidBy}</div>
+                    <div className="font-medium capitalize text-gray-900">{expense.category}</div>
+                    <div className="text-sm text-gray-700">{expense.paidBy}</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold">{financeService.getDisplayAmount(expense.amount, expense.currency)}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-bold text-gray-900">{financeService.getDisplayAmount(expense.amount, expense.currency)}</div>
+                  <div className="text-sm text-gray-700">
                     {new Date(expense.date).toLocaleDateString()}
                   </div>
                 </div>
@@ -806,8 +806,8 @@ export const FinanceManager: React.FC<FinanceManagerProps> = ({ className = '' }
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Animations */}
-      {showAnimations.confetti && <ConfettiAnimation />}
-      {showAnimations.checkmark && <CheckmarkAnimation />}
+      {showAnimations.confetti && <ConfettiAnimation isActive={true} onComplete={() => setShowAnimations(prev => ({ ...prev, confetti: false }))} />}
+      {showAnimations.checkmark && <CheckmarkAnimation isActive={true} onComplete={() => setShowAnimations(prev => ({ ...prev, checkmark: false }))} />}
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">

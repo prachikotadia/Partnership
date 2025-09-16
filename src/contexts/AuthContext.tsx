@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, AuthSession, LoginCredentials, RegisterData, PasswordResetData, PasswordResetConfirmData, MagicLinkData, TwoFactorSetup } from '@/services/authService';
-import { authService } from '@/services/authService';
+import { User, AuthSession, LoginCredentials, RegisterData, PasswordResetData, PasswordResetConfirmData, MagicLinkData } from '@/services/supabaseAuthService';
+import { supabaseAuthService } from '@/services/supabaseAuthService';
 
 interface AuthContextType {
   user: User | null;
@@ -13,7 +13,7 @@ interface AuthContextType {
   sendPasswordReset: (data: PasswordResetData) => Promise<{ success: boolean; message?: string }>;
   confirmPasswordReset: (data: PasswordResetConfirmData) => Promise<{ success: boolean; message?: string }>;
   sendMagicLink: (data: MagicLinkData) => Promise<{ success: boolean; message?: string }>;
-  setupTwoFactor: () => Promise<TwoFactorSetup>;
+  setupTwoFactor: () => Promise<{ secret: string; qrCode: string; backupCodes: string[] }>;
   enableTwoFactor: (secret: string, code: string) => Promise<{ success: boolean; message?: string }>;
   disableTwoFactor: (password: string) => Promise<{ success: boolean; message?: string }>;
   pairWithPartner: (partnerEmail: string) => Promise<{ success: boolean; message?: string }>;
@@ -35,8 +35,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Load existing session if available
-    const currentUser = authService.getCurrentUser();
-    const currentSession = authService.getSession();
+    const currentUser = supabaseAuthService.getCurrentUser();
+    const currentSession = supabaseAuthService.getSession();
     
     if (currentUser && currentSession) {
       setUser(currentUser);
@@ -49,9 +49,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
 
     // Subscribe to auth state changes
-    const unsubscribe = authService.subscribe((newUser) => {
+    const unsubscribe = supabaseAuthService.subscribe((newUser) => {
       setUser(newUser);
-      setSession(authService.getSession());
+      setSession(supabaseAuthService.getSession());
     });
 
     return unsubscribe;
@@ -60,11 +60,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const result = await authService.login(credentials);
+      const result = await supabaseAuthService.login(credentials);
       if (result.success) {
         // Force update the authentication state
-        const currentUser = authService.getCurrentUser();
-        const currentSession = authService.getSession();
+        const currentUser = supabaseAuthService.getCurrentUser();
+        const currentSession = supabaseAuthService.getSession();
         setUser(currentUser);
         setSession(currentSession);
       }
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      const result = await authService.register(data);
+      const result = await supabaseAuthService.register(data);
       return result;
     } finally {
       setIsLoading(false);
@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await authService.logout();
+      await supabaseAuthService.logout();
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const sendPasswordReset = async (data: PasswordResetData) => {
     setIsLoading(true);
     try {
-      const result = await authService.sendPasswordReset(data);
+      const result = await supabaseAuthService.sendPasswordReset(data);
       return result;
     } finally {
       setIsLoading(false);
@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const confirmPasswordReset = async (data: PasswordResetConfirmData) => {
     setIsLoading(true);
     try {
-      const result = await authService.confirmPasswordReset(data);
+      const result = await supabaseAuthService.confirmPasswordReset(data);
       return result;
     } finally {
       setIsLoading(false);
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const sendMagicLink = async (data: MagicLinkData) => {
     setIsLoading(true);
     try {
-      const result = await authService.sendMagicLink(data);
+      const result = await supabaseAuthService.sendMagicLink(data);
       return result;
     } finally {
       setIsLoading(false);
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const setupTwoFactor = async () => {
     setIsLoading(true);
     try {
-      const result = await authService.setupTwoFactor();
+      const result = await supabaseAuthService.setupTwoFactor();
       return result;
     } finally {
       setIsLoading(false);
@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const enableTwoFactor = async (secret: string, code: string) => {
     setIsLoading(true);
     try {
-      const result = await authService.enableTwoFactor(secret, code);
+      const result = await supabaseAuthService.enableTwoFactor(secret, code);
       return result;
     } finally {
       setIsLoading(false);
@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const disableTwoFactor = async (password: string) => {
     setIsLoading(true);
     try {
-      const result = await authService.disableTwoFactor(password);
+      const result = await supabaseAuthService.disableTwoFactor(password);
       return result;
     } finally {
       setIsLoading(false);
@@ -156,7 +156,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const pairWithPartner = async (partnerEmail: string) => {
     setIsLoading(true);
     try {
-      const result = await authService.pairWithPartner(partnerEmail);
+      const result = await supabaseAuthService.pairWithPartner(partnerEmail);
       return result;
     } finally {
       setIsLoading(false);
@@ -166,7 +166,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const unpairPartner = async () => {
     setIsLoading(true);
     try {
-      const result = await authService.unpairPartner();
+      const result = await supabaseAuthService.unpairPartner();
       return result;
     } finally {
       setIsLoading(false);
@@ -177,8 +177,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       // In a real app, this would refresh the token
-      const currentSession = authService.getSession();
-      if (currentSession && !authService.isTokenExpired()) {
+      const currentSession = supabaseAuthService.getSession();
+      if (currentSession && !supabaseAuthService.isTokenExpired()) {
         setSession(currentSession);
       } else {
         await logout();
@@ -205,7 +205,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     pairWithPartner,
     unpairPartner,
     refreshSession,
-    clearSessionOnStart: () => authService.clearSessionOnStart()
+    clearSessionOnStart: () => supabaseAuthService.clearSessionOnStart()
   };
 
   return (

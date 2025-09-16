@@ -74,7 +74,7 @@ All colors MUST be HSL for consistent theming across light/dark modes.
 
     /* Functional Colors */
     --muted: 25 15% 20%;
-    --muted-foreground: 30 10% 65%;
+    --muted-foreground: 30 10% 75%;
 
     --destructive: 0 75% 60%;
     --destructive-foreground: 30 15% 95%;
@@ -136,7 +136,7 @@ All colors MUST be HSL for consistent theming across light/dark modes.
     --glass-border: 25 20% 15% / 0.15;
 
     --muted: 30 15% 88%;
-    --muted-foreground: 25 10% 45%;
+    --muted-foreground: 25 10% 25%;
 
     --gradient-background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
     --shadow-glass: 0 8px 32px hsl(30 20% 80% / 0.4);
