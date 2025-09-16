@@ -1,6 +1,5 @@
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
-import { emailService } from './emailService';
 import { loginSessionService } from './loginSessionService';
 
 export interface User {
@@ -261,51 +260,7 @@ class SupabaseAuthService {
     }
   }
 
-  async verifyEmailCode(email: string, code: string, type: 'login' | 'register' | 'password_reset' | 'two_factor'): Promise<{ success: boolean; message?: string }> {
-    try {
-      // Verify the code
-      const isValid = emailService.verifyCode(email, code, type);
-      
-      if (!isValid) {
-        return {
-          success: false,
-          message: 'Invalid or expired verification code. Please try again.'
-        };
-      }
-
-      // For login verification, complete the authentication
-      if (type === 'login') {
-        // Get user from Supabase auth
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
-        if (error || !user) {
-          return {
-            success: false,
-            message: 'User not found. Please register first.'
-          };
-        }
-
-        // Create session from Supabase user
-        await this.mapSupabaseSessionToAppSession({ user });
-        
-        notificationService.showSimpleNotification(
-          'Welcome back!',
-          `Hello ${user.user_metadata?.name || 'User'}, you're successfully logged in.`,
-          'success'
-        );
-
-        return { success: true };
-      }
-
-      return { success: true };
-    } catch (error: any) {
-      console.error('Email verification error:', error);
-      return {
-        success: false,
-        message: error.message || 'An error occurred during verification'
-      };
-    }
-  }
+  // Email verification removed - using direct username/password login
 
   async register(data: RegisterData): Promise<{ success: boolean; message?: string }> {
     if (this.isRateLimited(data.email)) {
@@ -326,19 +281,52 @@ class SupabaseAuthService {
         return { success: false, message: 'Please accept the terms and conditions' };
       }
 
-      // Send email verification code for registration
-      const emailResult = await emailService.sendVerificationCode(data.email, 'register');
-      
-      if (!emailResult.success) {
+      // Register user directly with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            username: data.name.toLowerCase().replace(/\s+/g, '_') // Generate username from name
+          }
+        }
+      });
+
+      if (authError) {
         return {
           success: false,
-          message: emailResult.message
+          message: authError.message || 'Registration failed'
         };
+      }
+
+      if (!authData.user) {
+        return {
+          success: false,
+          message: 'Registration failed - no user created'
+        };
+      }
+
+      // Create user profile in public.users table
+      const { error: profileError } = await supabase
+        .from('users')
+        .insert({
+          id: authData.user.id,
+          email: data.email,
+          name: data.name,
+          username: data.name.toLowerCase().replace(/\s+/g, '_'),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        console.error('Error creating user profile:', profileError);
+        // Don't fail registration if profile creation fails
       }
 
       return {
         success: true,
-        message: emailResult.message
+        message: 'Registration successful! You can now login.'
       };
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -346,48 +334,7 @@ class SupabaseAuthService {
     }
   }
 
-  async completeRegistration(data: RegisterData, verificationCode: string): Promise<{ success: boolean; message?: string }> {
-    try {
-      // Verify the email code first
-      const isValid = emailService.verifyCode(data.email, verificationCode, 'register');
-      
-      if (!isValid) {
-        return {
-          success: false,
-          message: 'Invalid or expired verification code. Please try again.'
-        };
-      }
-
-      // Create the user account
-      const { data: authData, error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            name: data.name
-          }
-        }
-      });
-      
-      if (error) {
-        return { success: false, message: error.message };
-      }
-
-      if (authData.user) {
-        notificationService.showSimpleNotification(
-          'Welcome!',
-          `Hello ${data.name}, your account has been created successfully!`,
-          'success'
-        );
-        return { success: true };
-      }
-
-      return { success: true };
-    } catch (error: any) {
-      console.error('Registration completion error:', error);
-      return { success: false, message: error.message || 'An error occurred during registration' };
-    }
-  }
+  // completeRegistration removed - using direct registration without email verification
 
   async logout(): Promise<void> {
     try {
@@ -408,123 +355,9 @@ class SupabaseAuthService {
     }
   }
 
-  async sendPasswordReset(data: PasswordResetData): Promise<{ success: boolean; message?: string }> {
-    if (this.isRateLimited(data.email)) {
-      return { success: false, message: 'Too many password reset attempts. Please try again in 15 minutes.' };
-    }
-    try {
-      // Send email verification code for password reset
-      const emailResult = await emailService.sendVerificationCode(data.email, 'password_reset');
-      
-      if (!emailResult.success) {
-        return {
-          success: false,
-          message: emailResult.message
-        };
-      }
+  // Email-based methods removed - using direct username/password authentication
 
-      return {
-        success: true,
-        message: emailResult.message
-      };
-    } catch (error: any) {
-      console.error('Password reset error:', error);
-      return { success: false, message: error.message || 'An error occurred while sending password reset' };
-    }
-  }
-
-  async confirmPasswordReset(data: PasswordResetConfirmData): Promise<{ success: boolean; message?: string }> {
-    try {
-      if (data.newPassword !== data.confirmPassword) {
-        return { success: false, message: 'Passwords do not match' };
-      }
-      if (data.newPassword.length < 8) {
-        return { success: false, message: 'Password must be at least 8 characters long' };
-      }
-      // Supabase handles password reset confirmation via a URL, so this function might be simplified
-      // For now, we'll simulate success
-      notificationService.showSimpleNotification(
-        'Password Reset',
-        'Your password has been successfully reset.',
-        'success'
-      );
-      return { success: true };
-    } catch (error: any) {
-      console.error('Password reset confirm error:', error);
-      return { success: false, message: error.message || 'An error occurred while resetting password' };
-    }
-  }
-
-  async sendMagicLink(data: MagicLinkData): Promise<{ success: boolean; message?: string }> {
-    if (this.isRateLimited(data.email)) {
-      return { success: false, message: 'Too many magic link attempts. Please try again in 15 minutes.' };
-    }
-    try {
-      // Send magic link via email
-      const emailResult = await emailService.sendMagicLink(data.email, 'login');
-      
-      if (!emailResult.success) {
-        return {
-          success: false,
-          message: emailResult.message
-        };
-      }
-
-      return {
-        success: true,
-        message: emailResult.message
-      };
-    } catch (error: any) {
-      console.error('Magic link error:', error);
-      return { success: false, message: error.message || 'An error occurred while sending magic link' };
-    }
-  }
-
-  // Two-Factor Authentication using Email Verification
-  async setupTwoFactor(): Promise<{ secret: string; qrCode: string; backupCodes: string[] }> {
-    // For email-based 2FA, we don't need QR codes or backup codes
-    return { 
-      secret: 'email_2fa', 
-      qrCode: '', 
-      backupCodes: [] 
-    };
-  }
-
-  async enableTwoFactor(secret: string, code: string): Promise<{ success: boolean; message?: string }> {
-    // Email-based 2FA is always enabled when user has email
-    return { success: true, message: 'Two-factor authentication enabled via email' };
-  }
-
-  async disableTwoFactor(password: string): Promise<{ success: boolean; message?: string }> {
-    // Email-based 2FA cannot be disabled as it's the primary security method
-    return { success: false, message: 'Email-based two-factor authentication cannot be disabled' };
-  }
-
-  private async verifyTwoFactorCode(email: string, code: string): Promise<{ success: boolean; requiresTwoFactor?: boolean; message?: string }> {
-    try {
-      // Send email verification code for 2FA
-      const emailResult = await emailService.sendVerificationCode(email, 'two_factor');
-      
-      if (!emailResult.success) {
-        return {
-          success: false,
-          message: emailResult.message
-        };
-      }
-
-      return {
-        success: true,
-        requiresTwoFactor: true,
-        message: emailResult.message
-      };
-    } catch (error: any) {
-      console.error('2FA verification error:', error);
-      return {
-        success: false,
-        message: error.message || 'An error occurred during 2FA verification'
-      };
-    }
-  }
+  // Two-Factor Authentication removed - using direct username/password authentication
 
   getCurrentUser(): User | null {
     return this.currentUser;
@@ -648,3 +481,4 @@ class SupabaseAuthService {
 }
 
 export const supabaseAuthService = new SupabaseAuthService();
+
