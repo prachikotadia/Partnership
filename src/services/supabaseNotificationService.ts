@@ -192,7 +192,7 @@ class SupabaseNotificationService {
           .eq('is_read', false);
 
         if (fallbackError) {
-          console.error('Fallback query also failed:', fallbackError);
+          console.warn('Fallback query failed, returning 0:', fallbackError.message);
           return 0;
         }
 
