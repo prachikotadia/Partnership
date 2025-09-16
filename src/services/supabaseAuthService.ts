@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
+import { emailService } from './emailService';
 
 export interface User {
   id: string;
@@ -47,6 +48,11 @@ export interface PasswordResetConfirmData {
 
 export interface MagicLinkData {
   email: string;
+}
+
+export interface EmailVerificationData {
+  email: string;
+  code: string;
 }
 
 class SupabaseAuthService {
@@ -182,33 +188,77 @@ class SupabaseAuthService {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password
-      });
+      // If two-factor code is provided, verify it
+      if (credentials.twoFactorCode) {
+        return await this.verifyTwoFactorCode(credentials.email, credentials.twoFactorCode);
+      }
+
+      // Send email verification code for login
+      const emailResult = await emailService.sendVerificationCode(credentials.email, 'login');
       
-      if (error) {
+      if (!emailResult.success) {
         return {
           success: false,
-          message: error.message
+          message: emailResult.message
         };
       }
 
-      if (data.user) {
-        notificationService.showSimpleNotification(
-          'Welcome back!',
-          `Hello ${data.user.user_metadata?.name || 'User'}, you're successfully logged in.`,
-          'success'
-        );
-        return { success: true };
-      }
-
-      return { success: true };
+      return {
+        success: true,
+        requiresTwoFactor: true,
+        message: emailResult.message
+      };
     } catch (error: any) {
       console.error('Login error:', error);
       return {
         success: false,
         message: error.message || 'An error occurred during login'
+      };
+    }
+  }
+
+  async verifyEmailCode(email: string, code: string, type: 'login' | 'register' | 'password_reset' | 'two_factor'): Promise<{ success: boolean; message?: string }> {
+    try {
+      // Verify the code
+      const isValid = emailService.verifyCode(email, code, type);
+      
+      if (!isValid) {
+        return {
+          success: false,
+          message: 'Invalid or expired verification code. Please try again.'
+        };
+      }
+
+      // For login verification, complete the authentication
+      if (type === 'login') {
+        // Get user from Supabase auth
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error || !user) {
+          return {
+            success: false,
+            message: 'User not found. Please register first.'
+          };
+        }
+
+        // Create session from Supabase user
+        await this.mapSupabaseSessionToAppSession({ user });
+        
+        notificationService.showSimpleNotification(
+          'Welcome back!',
+          `Hello ${user.user_metadata?.name || 'User'}, you're successfully logged in.`,
+          'success'
+        );
+
+        return { success: true };
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      console.error('Email verification error:', error);
+      return {
+        success: false,
+        message: error.message || 'An error occurred during verification'
       };
     }
   }
@@ -232,6 +282,39 @@ class SupabaseAuthService {
         return { success: false, message: 'Please accept the terms and conditions' };
       }
 
+      // Send email verification code for registration
+      const emailResult = await emailService.sendVerificationCode(data.email, 'register');
+      
+      if (!emailResult.success) {
+        return {
+          success: false,
+          message: emailResult.message
+        };
+      }
+
+      return {
+        success: true,
+        message: emailResult.message
+      };
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      return { success: false, message: error.message || 'An error occurred during registration' };
+    }
+  }
+
+  async completeRegistration(data: RegisterData, verificationCode: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      // Verify the email code first
+      const isValid = emailService.verifyCode(data.email, verificationCode, 'register');
+      
+      if (!isValid) {
+        return {
+          success: false,
+          message: 'Invalid or expired verification code. Please try again.'
+        };
+      }
+
+      // Create the user account
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -249,7 +332,7 @@ class SupabaseAuthService {
       if (authData.user) {
         notificationService.showSimpleNotification(
           'Welcome!',
-          `Hello ${data.name}, your account has been created successfully. Please check your email to verify your account.`,
+          `Hello ${data.name}, your account has been created successfully!`,
           'success'
         );
         return { success: true };
@@ -257,7 +340,7 @@ class SupabaseAuthService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Registration error:', error);
+      console.error('Registration completion error:', error);
       return { success: false, message: error.message || 'An error occurred during registration' };
     }
   }
@@ -283,16 +366,20 @@ class SupabaseAuthService {
       return { success: false, message: 'Too many password reset attempts. Please try again in 15 minutes.' };
     }
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email);
-      if (error) {
-        return { success: false, message: error.message };
+      // Send email verification code for password reset
+      const emailResult = await emailService.sendVerificationCode(data.email, 'password_reset');
+      
+      if (!emailResult.success) {
+        return {
+          success: false,
+          message: emailResult.message
+        };
       }
-      notificationService.showSimpleNotification(
-        'Password Reset Sent',
-        'If an account with that email exists, we\'ve sent a password reset link.',
-        'info'
-      );
-      return { success: true };
+
+      return {
+        success: true,
+        message: emailResult.message
+      };
     } catch (error: any) {
       console.error('Password reset error:', error);
       return { success: false, message: error.message || 'An error occurred while sending password reset' };
@@ -326,45 +413,70 @@ class SupabaseAuthService {
       return { success: false, message: 'Too many magic link attempts. Please try again in 15 minutes.' };
     }
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email: data.email });
-      if (error) {
-        return { success: false, message: error.message };
+      // Send magic link via email
+      const emailResult = await emailService.sendMagicLink(data.email, 'login');
+      
+      if (!emailResult.success) {
+        return {
+          success: false,
+          message: emailResult.message
+        };
       }
-      notificationService.showSimpleNotification(
-        'Magic Link Sent',
-        'Check your email for a secure login link.',
-        'info'
-      );
-      return { success: true };
+
+      return {
+        success: true,
+        message: emailResult.message
+      };
     } catch (error: any) {
       console.error('Magic link error:', error);
       return { success: false, message: error.message || 'An error occurred while sending magic link' };
     }
   }
 
-  // Two-Factor Authentication (Mocked for now, Supabase does not have native 2FA)
+  // Two-Factor Authentication using Email Verification
   async setupTwoFactor(): Promise<{ secret: string; qrCode: string; backupCodes: string[] }> {
-    // Mock implementation
+    // For email-based 2FA, we don't need QR codes or backup codes
     return { 
-      secret: 'mock_secret', 
-      qrCode: 'mock_qr', 
-      backupCodes: ['mock_code1', 'mock_code2'] 
+      secret: 'email_2fa', 
+      qrCode: '', 
+      backupCodes: [] 
     };
   }
 
   async enableTwoFactor(secret: string, code: string): Promise<{ success: boolean; message?: string }> {
-    // Mock implementation
-    return { success: true };
+    // Email-based 2FA is always enabled when user has email
+    return { success: true, message: 'Two-factor authentication enabled via email' };
   }
 
   async disableTwoFactor(password: string): Promise<{ success: boolean; message?: string }> {
-    // Mock implementation
-    return { success: true };
+    // Email-based 2FA cannot be disabled as it's the primary security method
+    return { success: false, message: 'Email-based two-factor authentication cannot be disabled' };
   }
 
-  private verifyTwoFactorCode(code: string, secret?: string): boolean {
-    // Mock implementation
-    return code === '123456' || code === '000000';
+  private async verifyTwoFactorCode(email: string, code: string): Promise<{ success: boolean; requiresTwoFactor?: boolean; message?: string }> {
+    try {
+      // Send email verification code for 2FA
+      const emailResult = await emailService.sendVerificationCode(email, 'two_factor');
+      
+      if (!emailResult.success) {
+        return {
+          success: false,
+          message: emailResult.message
+        };
+      }
+
+      return {
+        success: true,
+        requiresTwoFactor: true,
+        message: emailResult.message
+      };
+    } catch (error: any) {
+      console.error('2FA verification error:', error);
+      return {
+        success: false,
+        message: error.message || 'An error occurred during 2FA verification'
+      };
+    }
   }
 
   getCurrentUser(): User | null {

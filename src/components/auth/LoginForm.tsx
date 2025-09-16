@@ -19,6 +19,7 @@ import { NeumorphicButton } from '@/components/ui/neumorphic-button';
 import { NeumorphicInput } from '@/components/ui/neumorphic-input';
 import { TwoFactorModal } from './TwoFactorModal';
 import { MagicLinkModal } from './MagicLinkModal';
+import { EmailVerificationModal } from './EmailVerificationModal';
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
@@ -42,6 +43,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [success, setSuccess] = useState('');
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [showMagicLink, setShowMagicLink] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -55,8 +57,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     setError('');
     setSuccess('');
 
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
+    if (!formData.email) {
+      setError('Please enter your email address');
       return;
     }
 
@@ -67,10 +69,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     });
 
     if (result.success) {
-      setSuccess('Login successful!');
-    } else if (result.requiresTwoFactor) {
-      setRequiresTwoFactor(true);
-      setShowTwoFactor(true);
+      if (result.requiresTwoFactor) {
+        setRequiresTwoFactor(true);
+        setShowEmailVerification(true);
+        setSuccess(result.message || 'Verification code sent to your email');
+      } else {
+        setSuccess('Login successful!');
+      }
     } else {
       setError(result.message || 'Login failed');
     }
@@ -79,6 +84,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const handleTwoFactorSuccess = () => {
     setShowTwoFactor(false);
     setSuccess('Login successful!');
+  };
+
+  const handleEmailVerificationSuccess = () => {
+    setShowEmailVerification(false);
+    setSuccess('Login successful!');
+  };
+
+  const handleResendEmailCode = async () => {
+    const result = await login({
+      email: formData.email,
+      password: formData.password,
+      rememberMe: formData.rememberMe
+    });
+    return result;
   };
 
   const handleMagicLinkSuccess = () => {
@@ -137,27 +156,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <NeumorphicInput
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                className="pl-10 pr-10"
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                disabled={isLoading}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              We'll send a verification code to your email for secure login
+            </p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -269,6 +271,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           isOpen={showMagicLink}
           onClose={() => setShowMagicLink(false)}
           onSuccess={handleMagicLinkSuccess}
+        />
+      )}
+
+      {/* Email Verification Modal */}
+      {showEmailVerification && (
+        <EmailVerificationModal
+          isOpen={showEmailVerification}
+          onClose={() => setShowEmailVerification(false)}
+          email={formData.email}
+          type="login"
+          onSuccess={handleEmailVerificationSuccess}
+          onResend={handleResendEmailCode}
         />
       )}
     </div>
