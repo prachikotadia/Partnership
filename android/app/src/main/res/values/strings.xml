@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Together - Partner Collaboration</string>
+    <string name="title_activity_main">Together - Partner Collaboration</string>
+    <string name="package_name">com.together.partnercollaboration</string>
+    <string name="custom_url_scheme">com.together.partnercollaboration</string>
+</resources>

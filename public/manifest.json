@@ -1,0 +1,72 @@
+{
+  "name": "Bondly Glow - Partner Collaboration",
+  "short_name": "Bondly Glow",
+  "description": "A beautiful app for couples to collaborate, plan, and grow together",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f23",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["lifestyle", "productivity", "social"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your dashboard",
+      "url": "/?tab=dashboard",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "64x64"
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "short_name": "Tasks",
+      "description": "Manage your tasks",
+      "url": "/?tab=tasks",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "64x64"
+        }
+      ]
+    },
+    {
+      "name": "Finance",
+      "short_name": "Finance",
+      "description": "Track your finances",
+      "url": "/?tab=finance",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "64x64"
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "short_name": "Notifications",
+      "description": "View notifications",
+      "url": "/?tab=notifications",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "64x64"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
