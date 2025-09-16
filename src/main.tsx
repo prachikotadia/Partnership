@@ -3,6 +3,8 @@ import { MobileApp } from "./components/MobileApp.tsx";
 import "./index.css";
 
 // Register service worker for PWA and push notifications
+// Temporarily disabled to troubleshoot network issues
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -14,5 +16,6 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+*/
 
 createRoot(document.getElementById("root")!).render(<MobileApp />);
