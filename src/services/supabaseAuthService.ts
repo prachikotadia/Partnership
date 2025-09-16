@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
 import { emailService } from './emailService';
+import { loginSessionService } from './loginSessionService';
 
 export interface User {
   id: string;
@@ -226,12 +227,33 @@ class SupabaseAuthService {
       // Create session
       await this.mapSupabaseSessionToAppSession(authData.session);
 
+      // Save login session to database
+      await loginSessionService.createLoginSession({
+        username: credentials.username,
+        session_token: authData.session.access_token,
+        remember_me: credentials.rememberMe || false
+      });
+
+      // Record successful login in history
+      await loginSessionService.recordLoginAttempt({
+        username: credentials.username,
+        success: true
+      });
+
       return {
         success: true,
         message: 'Login successful!'
       };
     } catch (error: any) {
       console.error('Login error:', error);
+      
+      // Record failed login attempt in history
+      await loginSessionService.recordLoginAttempt({
+        username: credentials.username,
+        success: false,
+        failure_reason: error.message || 'Login failed'
+      });
+
       return {
         success: false,
         message: error.message || 'An error occurred during login'
@@ -369,6 +391,9 @@ class SupabaseAuthService {
 
   async logout(): Promise<void> {
     try {
+      // Logout all active sessions in database
+      await loginSessionService.logoutAllSessions();
+      
       await supabase.auth.signOut();
       this.clearSession();
       
