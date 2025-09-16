@@ -188,24 +188,30 @@ class SupabaseAuthService {
     }
 
     try {
-      // For username/password login, we need to find the user by username first
-      // Since Supabase auth uses email, we'll need to look up the user in our users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('email, id')
-        .eq('username', credentials.username)
-        .single();
+      let userEmail = credentials.username;
+      
+      // Check if the input is an email or username
+      if (!credentials.username.includes('@')) {
+        // It's a username, look up the email in the users table
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('email, id')
+          .eq('username', credentials.username)
+          .single();
 
-      if (userError || !userData) {
-        return {
-          success: false,
-          message: 'Invalid username or password'
-        };
+        if (userError || !userData) {
+          return {
+            success: false,
+            message: 'Invalid username or password'
+          };
+        }
+        
+        userEmail = userData.email;
       }
 
-      // Now authenticate with Supabase using the email
+      // Authenticate with Supabase using the email
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: userData.email,
+        email: userEmail,
         password: credentials.password
       });
 
@@ -226,16 +232,31 @@ class SupabaseAuthService {
       // Create session
       await this.mapSupabaseSessionToAppSession(authData.session);
 
+      // Get the actual username from user data
+      let actualUsername = credentials.username;
+      if (credentials.username.includes('@')) {
+        // If login was with email, get the username from user data
+        const { data: userData } = await supabase
+          .from('users')
+          .select('username')
+          .eq('email', credentials.username)
+          .single();
+        
+        if (userData) {
+          actualUsername = userData.username;
+        }
+      }
+
       // Save login session to database
       await loginSessionService.createLoginSession({
-        username: credentials.username,
+        username: actualUsername,
         session_token: authData.session.access_token,
         remember_me: credentials.rememberMe || false
       });
 
       // Record successful login in history
       await loginSessionService.recordLoginAttempt({
-        username: credentials.username,
+        username: actualUsername,
         success: true
       });
 
