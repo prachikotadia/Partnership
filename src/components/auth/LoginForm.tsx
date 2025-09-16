@@ -237,6 +237,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           </div>
         </div>
 
+        {/* Forgot Password */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={onSwitchToForgotPassword}
+            className="text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors"
+            disabled={isLoading}
+          >
+            Forgot your password?
+          </button>
+        </div>
+
         {/* Switch to Register */}
         <div className="text-center">
           <p className="text-sm text-gray-600">

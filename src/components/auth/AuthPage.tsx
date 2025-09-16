@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
-import { ForgotPasswordForm } from './ForgotPasswordForm';
+import { PasswordResetFlow } from './PasswordResetFlow';
 import { 
   Heart, 
   Sparkles, 
@@ -80,8 +80,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ className = '' }) => {
         );
       case 'forgot-password':
         return (
-          <ForgotPasswordForm
-            onSwitchToLogin={() => setMode('login')}
+          <PasswordResetFlow
+            onBack={() => setMode('login')}
             onSuccess={() => setMode('login')}
           />
         );
@@ -214,25 +214,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ className = '' }) => {
   );
 };
 
-// Placeholder components for forgot password and reset password
-const ForgotPasswordForm: React.FC<{
-  onSwitchToLogin: () => void;
-  onSuccess: () => void;
-}> = ({ onSwitchToLogin, onSuccess }) => {
-  return (
-    <div className="text-center space-y-4">
-      <h2 className="text-xl font-semibold">Forgot Password</h2>
-      <p className="text-gray-600">This feature is coming soon!</p>
-      <button
-        onClick={onSwitchToLogin}
-        className="text-blue-600 hover:text-blue-800"
-      >
-        Back to Sign In
-      </button>
-    </div>
-  );
-};
-
+// Placeholder component for reset password (token-based)
 const ResetPasswordForm: React.FC<{
   token: string;
   onSwitchToLogin: () => void;
