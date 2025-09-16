@@ -189,8 +189,7 @@ class SupabaseNotificationService {
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('notifications')
           .select('id', { count: 'exact' })
-          .eq('is_read', false)
-          .is('expires_at', null);
+          .eq('is_read', false);
 
         if (fallbackError) {
           console.error('Fallback query also failed:', fallbackError);

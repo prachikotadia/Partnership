@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { realEmailService } from './realEmailService';
 
 export interface EmailVerificationData {
   email: string;
@@ -102,58 +103,8 @@ class EmailService {
       const code = this.generateVerificationCode();
       this.storeVerificationCode(email, code, type);
 
-      // Check if we're in development mode
-      const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
-      
-      if (isDevelopment) {
-        // Development mode - show code in console and alert
-        console.log(`🔐 Verification Code for ${email}: ${code}`);
-        console.log(`📧 Email Type: ${type}`);
-        console.log(`⏰ Code expires in 10 minutes`);
-        
-        // Show alert with the code
-        alert(`🔐 Verification Code: ${code}\n\nThis code expires in 10 minutes.\n\nIn production, this would be sent to your email.`);
-        
-        return {
-          success: true,
-          message: `Verification code generated! Check the alert and console for the code.`
-        };
-      }
-
-      // Production mode - use Supabase Edge Functions
-      try {
-        const { data, error } = await supabase.functions.invoke('send-verification-email', {
-          body: {
-            email,
-            code,
-            type,
-            template: this.getEmailTemplate(type, code)
-          }
-        });
-
-        if (error) {
-          console.error('Email sending error:', error);
-          return {
-            success: false,
-            message: 'Failed to send verification code. Please try again.'
-          };
-        }
-
-        return {
-          success: true,
-          message: `Verification code sent to ${email}. Check your inbox and spam folder.`
-        };
-      } catch (edgeFunctionError) {
-        console.error('Edge Function error:', edgeFunctionError);
-        // Fallback to development mode if Edge Functions fail
-        console.log(`🔐 Fallback - Verification Code for ${email}: ${code}`);
-        alert(`🔐 Verification Code: ${code}\n\nEdge Functions not deployed. Check console for details.`);
-        
-        return {
-          success: true,
-          message: `Verification code generated! Check the alert for the code.`
-        };
-      }
+      // Use real email service for sending verification codes
+      return await realEmailService.sendVerificationCode(email, code, type);
     } catch (error) {
       console.error('Email service error:', error);
       return {
@@ -169,60 +120,8 @@ class EmailService {
       const token = this.generateMagicLinkToken();
       this.storeMagicLink(email, token, type);
 
-      // Check if we're in development mode
-      const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
-      
-      if (isDevelopment) {
-        // Development mode - show link in console and alert
-        const magicLink = `${window.location.origin}/auth/magic-link?token=${token}&type=${type}`;
-        console.log(`🔗 Magic Link for ${email}: ${magicLink}`);
-        console.log(`📧 Link Type: ${type}`);
-        console.log(`⏰ Link expires in 15 minutes`);
-        
-        // Show alert with the link
-        alert(`🔗 Magic Link: ${magicLink}\n\nThis link expires in 15 minutes.\n\nIn production, this would be sent to your email.`);
-        
-        return {
-          success: true,
-          message: `Magic link generated! Check the alert and console for the link.`
-        };
-      }
-
-      // Production mode - use Supabase Edge Functions
-      try {
-        const { data, error } = await supabase.functions.invoke('send-magic-link-email', {
-          body: {
-            email,
-            token,
-            type,
-            template: this.getMagicLinkTemplate(type, token)
-          }
-        });
-
-        if (error) {
-          console.error('Email sending error:', error);
-          return {
-            success: false,
-            message: 'Failed to send magic link. Please try again.'
-          };
-        }
-
-        return {
-          success: true,
-          message: `Magic link sent to ${email}. Check your inbox and spam folder.`
-        };
-      } catch (edgeFunctionError) {
-        console.error('Edge Function error:', edgeFunctionError);
-        // Fallback to development mode if Edge Functions fail
-        const magicLink = `${window.location.origin}/auth/magic-link?token=${token}&type=${type}`;
-        console.log(`🔗 Fallback - Magic Link for ${email}: ${magicLink}`);
-        alert(`🔗 Magic Link: ${magicLink}\n\nEdge Functions not deployed. Check console for details.`);
-        
-        return {
-          success: true,
-          message: `Magic link generated! Check the alert for the link.`
-        };
-      }
+      // Use real email service for sending magic links
+      return await realEmailService.sendMagicLink(email, token, type);
     } catch (error) {
       console.error('Email service error:', error);
       return {
