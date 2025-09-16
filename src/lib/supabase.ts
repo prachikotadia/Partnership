@@ -19,6 +19,7 @@ export interface Database {
         Row: {
           id: string
           email: string
+          username: string
           name: string
           avatar_url?: string
           partner_id?: string
@@ -28,6 +29,7 @@ export interface Database {
         Insert: {
           id: string
           email: string
+          username: string
           name: string
           avatar_url?: string
           partner_id?: string
@@ -37,6 +39,7 @@ export interface Database {
         Update: {
           id?: string
           email?: string
+          username?: string
           name?: string
           avatar_url?: string
           partner_id?: string
