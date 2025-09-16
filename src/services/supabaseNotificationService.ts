@@ -214,7 +214,7 @@ class SupabaseNotificationService {
   async getUnseenCount(): Promise<number> {
     try {
       const { data, error } = await supabase
-        .rpc('get_unseen_notification_count');
+        .rpc('get_unread_notification_count');
 
       if (error) {
         console.error('Error fetching unseen count:', error);

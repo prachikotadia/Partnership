@@ -47,7 +47,7 @@ export const MobileApp: React.FC = () => {
         <AuthProvider>
           <DragDropProvider>
             <AnimationProvider>
-              <Router>
+              <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <div className={`min-h-screen ${isNative ? 'mobile-app' : ''}`}>
                   <Routes>
                     <Route 
