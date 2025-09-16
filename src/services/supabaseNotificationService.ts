@@ -147,10 +147,10 @@ class SupabaseNotificationService {
         query = query.eq('priority', filters.priority);
       }
       if (filters.is_read !== undefined) {
-        query = query.eq('is_read', filters.is_read);
+        query = query.eq('read', filters.is_read);
       }
       if (filters.is_seen !== undefined) {
-        query = query.eq('is_seen', filters.is_seen);
+        query = query.eq('seen', filters.is_seen);
       }
 
       // Apply pagination
@@ -178,12 +178,26 @@ class SupabaseNotificationService {
   // Get unread notifications count
   async getUnreadCount(): Promise<number> {
     try {
+      // Try to use the database function first
       const { data, error } = await supabase
         .rpc('get_unread_notification_count');
 
       if (error) {
-        console.error('Error fetching unread count:', error);
-        return 0;
+        console.warn('Database function not found, using fallback query:', error.message);
+        
+        // Fallback: query notifications table directly
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('notifications')
+          .select('id', { count: 'exact' })
+          .eq('seen', false)
+          .is('expires_at', null);
+
+        if (fallbackError) {
+          console.error('Fallback query also failed:', fallbackError);
+          return 0;
+        }
+
+        return fallbackData?.length || 0;
       }
 
       return data || 0;
