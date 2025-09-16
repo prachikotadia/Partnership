@@ -11,7 +11,7 @@ BEGIN
     SELECT COUNT(*) INTO unread_count
     FROM notifications
     WHERE user_id = auth.uid()
-    AND seen = false
+    AND is_read = false
     AND (expires_at IS NULL OR expires_at > NOW());
     
     RETURN COALESCE(unread_count, 0);
@@ -54,7 +54,7 @@ BEGIN
         n.type,
         n.category,
         n.priority,
-        n.seen,
+        n.is_seen,
         n.action_url,
         n.action_data,
         n.expires_at,
@@ -80,7 +80,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
     UPDATE notifications
-    SET seen = true, updated_at = NOW()
+    SET is_seen = true, seen_at = NOW(), updated_at = NOW()
     WHERE id = ANY(notification_ids)
     AND user_id = auth.uid();
     
@@ -114,7 +114,7 @@ GRANT EXECUTE ON FUNCTION cleanup_expired_notifications() TO authenticated;
 
 -- Create an index for better performance
 CREATE INDEX IF NOT EXISTS idx_notifications_user_seen_created 
-ON notifications(user_id, seen, created_at DESC);
+ON notifications(user_id, is_seen, created_at DESC);
 
 -- Create an index for expired notifications cleanup
 CREATE INDEX IF NOT EXISTS idx_notifications_expires_at 

@@ -147,10 +147,10 @@ class SupabaseNotificationService {
         query = query.eq('priority', filters.priority);
       }
       if (filters.is_read !== undefined) {
-        query = query.eq('read', filters.is_read);
+        query = query.eq('is_read', filters.is_read);
       }
       if (filters.is_seen !== undefined) {
-        query = query.eq('seen', filters.is_seen);
+        query = query.eq('is_seen', filters.is_seen);
       }
 
       // Apply pagination
@@ -189,7 +189,7 @@ class SupabaseNotificationService {
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('notifications')
           .select('id', { count: 'exact' })
-          .eq('seen', false)
+          .eq('is_read', false)
           .is('expires_at', null);
 
         if (fallbackError) {
