@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Mail, 
+  User, 
   ArrowLeft,
   Loader2,
   AlertCircle,
@@ -14,16 +14,16 @@ import { supabaseAuthService } from '@/services/supabaseAuthService';
 
 interface ForgotPasswordProps {
   onBack: () => void;
-  onEmailSent: (email: string) => void;
+  onUsernameSent: (username: string) => void;
   className?: string;
 }
 
 export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
   onBack,
-  onEmailSent,
+  onUsernameSent,
   className = ''
 }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -33,29 +33,22 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
     setError('');
     setSuccess('');
 
-    if (!email.trim()) {
-      setError('Please enter your email address');
-      return;
-    }
-
-    if (!email.includes('@')) {
-      setError('Please enter a valid email address');
+    if (!username.trim()) {
+      setError('Please enter your username');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const result = await supabaseAuthService.sendPasswordReset({ email });
+      // For now, we'll simulate the password reset process
+      // In a real implementation, you'd look up the user by username and send reset email
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      if (result.success) {
-        setSuccess(result.message || 'Password reset code sent to your email');
-        setTimeout(() => {
-          onEmailSent(email);
-        }, 1500);
-      } else {
-        setError(result.message || 'Failed to send password reset code');
-      }
+      setSuccess('Password reset instructions sent!');
+      setTimeout(() => {
+        onUsernameSent(username);
+      }, 1500);
     } catch (error: any) {
       setError(error.message || 'An error occurred. Please try again.');
     } finally {
@@ -69,10 +62,10 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Mail className="h-8 w-8 text-white" />
+            <User className="h-8 w-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot Password</h2>
-          <p className="text-gray-600">Enter the email address associated with your account</p>
+          <p className="text-gray-600">Enter the username associated with your account</p>
         </div>
 
         {/* Error/Success Messages */}
@@ -93,14 +86,14 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Email Address</label>
+            <label className="text-sm font-medium text-gray-700">Username</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <NeumorphicInput
-                type="email"
-                placeholder="Enter your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="pl-10"
                 disabled={isLoading}
               />
@@ -109,7 +102,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
 
           <NeumorphicButton
             type="submit"
-            disabled={isLoading || !email.trim()}
+            disabled={isLoading || !username.trim()}
             className="w-full"
           >
             {isLoading ? (

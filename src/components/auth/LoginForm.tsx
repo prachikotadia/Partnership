@@ -19,7 +19,7 @@ import { NeumorphicButton } from '@/components/ui/neumorphic-button';
 import { NeumorphicInput } from '@/components/ui/neumorphic-input';
 import { TwoFactorModal } from './TwoFactorModal';
 import { MagicLinkModal } from './MagicLinkModal';
-import { EmailVerificationModal } from './EmailVerificationModal';
+// EmailVerificationModal removed - using username/password login
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
@@ -34,7 +34,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 }) => {
   const { login, isLoading } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     rememberMe: false
   });
@@ -57,25 +57,24 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     setError('');
     setSuccess('');
 
-    if (!formData.email) {
-      setError('Please enter your email address');
+    if (!formData.username) {
+      setError('Please enter your username');
+      return;
+    }
+
+    if (!formData.password) {
+      setError('Please enter your password');
       return;
     }
 
     const result = await login({
-      email: formData.email,
+      username: formData.username,
       password: formData.password,
       rememberMe: formData.rememberMe
     });
 
     if (result.success) {
-      if (result.requiresTwoFactor) {
-        setRequiresTwoFactor(true);
-        setShowEmailVerification(true);
-        setSuccess(result.message || 'Verification code sent to your email');
-      } else {
-        setSuccess('Login successful!');
-      }
+      setSuccess('Login successful!');
     } else {
       setError(result.message || 'Login failed');
     }
@@ -86,18 +85,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     setSuccess('Login successful!');
   };
 
-  const handleEmailVerificationSuccess = () => {
-    setShowEmailVerification(false);
-    setSuccess('Login successful!');
-  };
-
   const handleResendEmailCode = async () => {
-    const result = await login({
-      email: formData.email,
-      password: formData.password,
-      rememberMe: formData.rememberMe
-    });
-    return result;
+    // This function is no longer needed for username/password login
+    return { success: false, message: 'Not available' };
   };
 
   const handleMagicLinkSuccess = () => {
@@ -142,24 +132,40 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Email Address</label>
+            <label className="text-sm font-medium text-gray-700">Username</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <NeumorphicInput
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                type="text"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={(e) => handleInputChange('username', e.target.value)}
                 className="pl-10"
                 disabled={isLoading}
               />
             </div>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              We'll send a verification code to your email for secure login
-            </p>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <NeumorphicInput
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                className="pl-10 pr-10"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
@@ -271,7 +277,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           isOpen={showTwoFactor}
           onClose={() => setShowTwoFactor(false)}
           onSuccess={handleTwoFactorSuccess}
-          email={formData.email}
+          email={formData.username}
           password={formData.password}
           rememberMe={formData.rememberMe}
         />
@@ -286,17 +292,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         />
       )}
 
-      {/* Email Verification Modal */}
-      {showEmailVerification && (
-        <EmailVerificationModal
-          isOpen={showEmailVerification}
-          onClose={() => setShowEmailVerification(false)}
-          email={formData.email}
-          type="login"
-          onSuccess={handleEmailVerificationSuccess}
-          onResend={handleResendEmailCode}
-        />
-      )}
+      {/* Email Verification Modal removed - using username/password login */}
     </div>
   );
 };

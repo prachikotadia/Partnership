@@ -17,16 +17,16 @@ export const PasswordResetFlow: React.FC<PasswordResetFlowProps> = ({
   className = ''
 }) => {
   const [currentStep, setCurrentStep] = useState<PasswordResetStep>('forgot');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
 
-  const handleEmailSent = (userEmail: string) => {
-    setEmail(userEmail);
+  const handleUsernameSent = (userUsername: string) => {
+    setUsername(userUsername);
     setCurrentStep('verification');
   };
 
-  const handleCodeVerified = (userEmail: string, code: string) => {
-    setEmail(userEmail);
+  const handleCodeVerified = (userUsername: string, code: string) => {
+    setUsername(userUsername);
     setVerificationCode(code);
     setCurrentStep('reset');
   };
@@ -57,14 +57,14 @@ export const PasswordResetFlow: React.FC<PasswordResetFlowProps> = ({
         return (
           <ForgotPassword
             onBack={onBack}
-            onEmailSent={handleEmailSent}
+            onUsernameSent={handleUsernameSent}
           />
         );
       
       case 'verification':
         return (
           <PasswordResetVerification
-            email={email}
+            email={username}
             onBack={handleBack}
             onCodeVerified={handleCodeVerified}
           />
@@ -73,7 +73,7 @@ export const PasswordResetFlow: React.FC<PasswordResetFlowProps> = ({
       case 'reset':
         return (
           <ResetPassword
-            email={email}
+            email={username}
             verificationCode={verificationCode}
             onBack={handleBack}
             onPasswordReset={handlePasswordReset}

@@ -22,7 +22,7 @@ export interface AuthSession {
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
   rememberMe?: boolean;
   twoFactorCode?: string;
@@ -134,14 +134,14 @@ class SupabaseAuthService {
     this.listeners.forEach(listener => listener(this.currentUser));
   }
 
-  private isRateLimited(email: string): boolean {
+  private isRateLimited(identifier: string): boolean {
     const now = Date.now();
-    const userAttempts = this.rateLimitMap.get(email);
+    const userAttempts = this.rateLimitMap.get(identifier);
     
     if (!userAttempts) return false;
     
     if (now > userAttempts.resetTime) {
-      this.rateLimitMap.delete(email);
+      this.rateLimitMap.delete(identifier);
       return false;
     }
     
@@ -150,9 +150,9 @@ class SupabaseAuthService {
 
   private cleanupRateLimit() {
     const now = Date.now();
-    for (const [email, attempts] of this.rateLimitMap.entries()) {
+    for (const [identifier, attempts] of this.rateLimitMap.entries()) {
       if (now > attempts.resetTime) {
-        this.rateLimitMap.delete(email);
+        this.rateLimitMap.delete(identifier);
       }
     }
   }
@@ -180,7 +180,7 @@ class SupabaseAuthService {
   }
 
   async login(credentials: LoginCredentials): Promise<{ success: boolean; requiresTwoFactor?: boolean; message?: string }> {
-    if (this.isRateLimited(credentials.email)) {
+    if (this.isRateLimited(credentials.username)) {
       return {
         success: false,
         message: 'Too many login attempts. Please try again in 15 minutes.'
@@ -188,25 +188,47 @@ class SupabaseAuthService {
     }
 
     try {
-      // If two-factor code is provided, verify it
-      if (credentials.twoFactorCode) {
-        return await this.verifyTwoFactorCode(credentials.email, credentials.twoFactorCode);
-      }
+      // For username/password login, we need to find the user by username first
+      // Since Supabase auth uses email, we'll need to look up the user in our users table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('email, id')
+        .eq('username', credentials.username)
+        .single();
 
-      // Send email verification code for login
-      const emailResult = await emailService.sendVerificationCode(credentials.email, 'login');
-      
-      if (!emailResult.success) {
+      if (userError || !userData) {
         return {
           success: false,
-          message: emailResult.message
+          message: 'Invalid username or password'
         };
       }
 
+      // Now authenticate with Supabase using the email
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: userData.email,
+        password: credentials.password
+      });
+
+      if (authError) {
+        return {
+          success: false,
+          message: 'Invalid username or password'
+        };
+      }
+
+      if (!authData.user || !authData.session) {
+        return {
+          success: false,
+          message: 'Authentication failed'
+        };
+      }
+
+      // Create session
+      await this.mapSupabaseSessionToAppSession(authData.session);
+
       return {
         success: true,
-        requiresTwoFactor: true,
-        message: emailResult.message
+        message: 'Login successful!'
       };
     } catch (error: any) {
       console.error('Login error:', error);
