@@ -183,25 +183,29 @@ class SupabaseNotificationService {
         .rpc('get_unread_notification_count');
 
       if (error) {
-        console.warn('Database function not found, using fallback query:', error.message);
-        
-        // Fallback: query notifications table directly
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('notifications')
-          .select('id', { count: 'exact' })
-          .eq('is_read', false);
+        // Silently handle missing function - no console warnings
+        if (error.message.includes('Could not find the function')) {
+          // Function doesn't exist, use fallback silently
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('notifications')
+            .select('id', { count: 'exact' })
+            .eq('is_read', false);
 
-        if (fallbackError) {
-          console.warn('Fallback query failed, returning 0:', fallbackError.message);
-          return 0;
+          if (fallbackError) {
+            return 0;
+          }
+
+          return fallbackData?.length || 0;
         }
-
-        return fallbackData?.length || 0;
+        
+        // Other errors - log but don't spam console
+        console.warn('Notification count error:', error.message);
+        return 0;
       }
 
       return data || 0;
     } catch (error) {
-      console.error('Error in getUnreadCount:', error);
+      // Silent error handling - don't spam console
       return 0;
     }
   }
