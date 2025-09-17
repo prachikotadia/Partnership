@@ -272,26 +272,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ userName, partnerNam
         )}
       </div>
 
-      {/* Bottom Navigation - Mobile Optimized */}
-      <div className="bg-white border-t border-gray-200 px-2 py-2 safe-area-pb">
-        <div className="flex justify-around">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors min-h-[60px] min-w-[60px] justify-center ${
-                activeTab === tab.id
-                  ? 'text-blue-500 bg-blue-50'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              aria-label={`${tab.label} tab`}
-            >
-              <tab.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-              <span className="text-xs font-medium leading-tight">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Floating Action Button - Mobile Optimized */}
       <div className="fixed bottom-20 right-4 z-10">
