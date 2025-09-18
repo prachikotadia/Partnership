@@ -75,14 +75,13 @@ DO $$
 DECLARE
     policy_count INTEGER;
     expected_policies INTEGER;
+    table_names TEXT[] := ARRAY['users', 'tasks', 'notes', 'check_ins', 'finance_entries', 'schedule_items', 'bucket_list_items', 'notifications', 'login_sessions', 'login_history'];
+    current_table TEXT;
 BEGIN
     RAISE NOTICE '🔍 Checking Row Level Security policies...';
     
     -- Check RLS is enabled on all tables
-    FOR current_table IN 
-        SELECT tablename FROM pg_tables 
-        WHERE schemaname = 'public' 
-        AND tablename IN ('users', 'tasks', 'notes', 'check_ins', 'finance_entries', 'schedule_items', 'bucket_list_items', 'notifications', 'login_sessions', 'login_history')
+    FOREACH current_table IN ARRAY table_names
     LOOP
         IF EXISTS (
             SELECT FROM pg_class 
