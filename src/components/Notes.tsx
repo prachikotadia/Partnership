@@ -47,7 +47,7 @@ interface Note {
   content: string;
   category: 'random' | 'brainstorm' | 'bucket-list' | 'travel' | 'food' | 'love';
   tags: string[];
-  createdBy: 'Alex' | 'Sam';
+  createdBy: 'Person1' | 'Person2';
   createdAt: Date;
   updatedAt: Date;
   pinned?: boolean;
@@ -55,53 +55,7 @@ interface Note {
 }
 
 export function Notes() {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: '1',
-      title: 'Weekend Ideas',
-      content: 'Movie marathon, cooking together, visit the botanical garden, try that new ice cream place Sam mentioned.',
-      category: 'random',
-      tags: ['weekend', 'activities', 'fun'],
-      createdBy: 'Alex',
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      pinned: true,
-      color: 'gradient-primary',
-    },
-    {
-      id: '2',
-      title: 'Dream Destinations',
-      content: 'Santorini (sunset views), Tokyo (cherry blossoms), Iceland (Northern lights), New Zealand (hobbiton), Maldives (overwater bungalows).',
-      category: 'bucket-list',
-      tags: ['travel', 'dreams', 'together'],
-      createdBy: 'Sam',
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      color: 'gradient-coral',
-    },
-    {
-      id: '3',
-      title: 'Romantic Dinner Ideas',
-      content: 'Homemade pasta with candlelight, rooftop picnic under stars, recreate our first date meal, cook each other\'s favorite childhood dish.',
-      category: 'food',
-      tags: ['romantic', 'cooking', 'date-night'],
-      createdBy: 'Alex',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      color: 'gradient-secondary',
-    },
-    {
-      id: '4',
-      title: 'Future House Features',
-      content: 'Big kitchen with island, reading nook by window, home office spaces, garden for herbs, cozy fireplace, walk-in closet.',
-      category: 'brainstorm',
-      tags: ['future', 'home', 'plans'],
-      createdBy: 'Sam',
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      color: 'gradient-teal',
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const [newNote, setNewNote] = useState({
     title: '',
@@ -123,7 +77,7 @@ export function Notes() {
         content: newNote.content,
         category: newNote.category,
         tags: newNote.tags,
-        createdBy: 'Alex',
+        createdBy: 'Person1',
         createdAt: new Date(),
         updatedAt: new Date(),
         color: newNote.color,
