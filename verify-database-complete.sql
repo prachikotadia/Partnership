@@ -13,18 +13,18 @@ DECLARE
         'login_sessions', 'login_history'
     ];
     missing_tables TEXT[] := '{}';
-    table_name TEXT;
+    current_table TEXT;
 BEGIN
     RAISE NOTICE '🔍 Checking if all required tables exist...';
     
-    FOREACH table_name IN ARRAY expected_tables
+    FOREACH current_table IN ARRAY expected_tables
     LOOP
         IF NOT EXISTS (
             SELECT FROM information_schema.tables 
-            WHERE table_name = table_name 
+            WHERE table_name = current_table 
             AND table_schema = 'public'
         ) THEN
-            missing_tables := array_append(missing_tables, table_name);
+            missing_tables := array_append(missing_tables, current_table);
         END IF;
     END LOOP;
     
@@ -40,7 +40,6 @@ END $$;
 -- ==============================================
 DO $$
 DECLARE
-    table_name TEXT;
     column_count INTEGER;
 BEGIN
     RAISE NOTICE '🔍 Checking table structures...';
@@ -75,25 +74,24 @@ END $$;
 DO $$
 DECLARE
     policy_count INTEGER;
-    table_name TEXT;
     expected_policies INTEGER;
 BEGIN
     RAISE NOTICE '🔍 Checking Row Level Security policies...';
     
     -- Check RLS is enabled on all tables
-    FOR table_name IN 
+    FOR current_table IN 
         SELECT tablename FROM pg_tables 
         WHERE schemaname = 'public' 
         AND tablename IN ('users', 'tasks', 'notes', 'check_ins', 'finance_entries', 'schedule_items', 'bucket_list_items', 'notifications', 'login_sessions', 'login_history')
     LOOP
         IF EXISTS (
             SELECT FROM pg_class 
-            WHERE relname = table_name 
+            WHERE relname = current_table 
             AND relrowsecurity = true
         ) THEN
-            RAISE NOTICE '✅ RLS enabled on %', table_name;
+            RAISE NOTICE '✅ RLS enabled on %', current_table;
         ELSE
-            RAISE NOTICE '❌ RLS not enabled on %', table_name;
+            RAISE NOTICE '❌ RLS not enabled on %', current_table;
         END IF;
     END LOOP;
     
