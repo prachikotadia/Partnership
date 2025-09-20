@@ -327,6 +327,14 @@ class SupabaseAuthService {
           };
         }
         
+        // Handle rate limiting
+        if (authError.status === 429 || authError.message.includes('rate limit') || authError.message.includes('too many requests')) {
+          return {
+            success: false,
+            message: 'Too many registration attempts. Please wait a few minutes and try again.'
+          };
+        }
+        
         return {
           success: false,
           message: authError.message || 'Registration failed'

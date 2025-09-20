@@ -1,7 +1,7 @@
 // Service Worker for Partnership App PWA
-const CACHE_NAME = 'partnership-app-v2';
-const STATIC_CACHE = 'partnership-static-v2';
-const DYNAMIC_CACHE = 'partnership-dynamic-v2';
+const CACHE_NAME = 'partnership-app-v3';
+const STATIC_CACHE = 'partnership-static-v3';
+const DYNAMIC_CACHE = 'partnership-dynamic-v3';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -114,8 +114,11 @@ async function cacheFirst(request) {
         url.protocol === 'moz-extension:' || 
         url.protocol === 'chrome:' ||
         url.protocol === 'data:' ||
-        url.protocol === 'blob:') {
-      return fetch(request);
+        url.protocol === 'blob:' ||
+        url.protocol === 'chrome-extension' ||
+        url.protocol === 'moz-extension') {
+      // Just fetch without caching for unsupported schemes
+      return fetch(request).catch(() => new Response('Request failed', { status: 500 }));
     }
 
     const cachedResponse = await caches.match(request);
