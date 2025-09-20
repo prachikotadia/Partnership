@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme support */
+[data-theme="dark"] {
+  --tw-bg-opacity: 1;
+  --tw-text-opacity: 1;
+}
+
+[data-theme="light"] {
+  --tw-bg-opacity: 1;
+  --tw-text-opacity: 1;
+}
+
 /* Mobile App Specific Styles */
 .mobile-app {
   /* Prevent overscroll bounce on iOS */

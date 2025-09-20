@@ -1,13 +1,13 @@
 import { DragDropProvider } from '@/components/drag-drop/DragDropProvider';
 import { AnimationProvider } from '@/components/animations/AnimationProvider';
-import { IOSDashboard } from '@/components/layout/IOSDashboard';
+import { EnhancedDashboard } from '@/components/layout/EnhancedDashboard';
 
 const Index = () => {
-  // Use iOS neumorphic layout for all devices
+  // Use enhanced neumorphic layout for all devices
   return (
     <DragDropProvider>
       <AnimationProvider>
-        <IOSDashboard userName="Person1" partnerName="Person2" />
+        <EnhancedDashboard userName="Person1" partnerName="Person2" />
       </AnimationProvider>
     </DragDropProvider>
   );
