@@ -78,6 +78,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip unsupported request schemes
+  if (url.protocol === 'chrome-extension:' || 
+      url.protocol === 'moz-extension:' || 
+      url.protocol === 'chrome:' ||
+      url.protocol === 'data:' ||
+      url.protocol === 'blob:') {
+    return;
+  }
+
   // Handle different types of requests
   if (isStaticFile(request.url)) {
     // Static files - cache first strategy
@@ -104,8 +113,13 @@ async function cacheFirst(request) {
 
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      const cache = await caches.open(STATIC_CACHE);
-      cache.put(request, networkResponse.clone());
+      try {
+        const cache = await caches.open(STATIC_CACHE);
+        await cache.put(request, networkResponse.clone());
+      } catch (cacheError) {
+        // Log cache error but don't fail the request
+        console.warn('Service Worker: Failed to cache request', request.url, cacheError);
+      }
     }
     return networkResponse;
   } catch (error) {
@@ -119,8 +133,13 @@ async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, networkResponse.clone());
+      try {
+        const cache = await caches.open(DYNAMIC_CACHE);
+        await cache.put(request, networkResponse.clone());
+      } catch (cacheError) {
+        // Log cache error but don't fail the request
+        console.warn('Service Worker: Failed to cache API request', request.url, cacheError);
+      }
     }
     return networkResponse;
   } catch (error) {
