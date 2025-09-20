@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { NeumorphicNavbar } from './NeumorphicNavbar';
+import { SimpleNavbar } from './SimpleNavbar';
 import { NeumorphicCardEnhanced } from '../ui/neumorphic-card-enhanced';
 import { NeumorphicButtonEnhanced } from '../ui/neumorphic-button-enhanced';
 import { 
@@ -227,7 +227,7 @@ export const SimpleEnhancedDashboard: React.FC<SimpleEnhancedDashboardProps> = (
       min-h-screen transition-colors duration-300
       ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}
     `}>
-      <NeumorphicNavbar activeTab={activeTab} onTabChange={setActiveTab} />
+      <SimpleNavbar activeTab={activeTab} onTabChange={setActiveTab} />
       
       <main className="lg:ml-20 p-4 lg:p-6">
         <div className="max-w-7xl mx-auto">
