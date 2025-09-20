@@ -93,74 +93,9 @@ export const NotesManager: React.FC<NotesManagerProps> = ({ className = '' }) =>
     repeatInterval: 1
   });
 
-  // Sample data for demonstration
+  // Initialize with empty state
   useEffect(() => {
-    const sampleNotes: Note[] = [
-      {
-        id: 'note_1',
-        title: 'Grocery List',
-        content: 'Milk, eggs, bread, apples, chicken breast',
-        author: 'Person1',
-        category: 'shopping',
-        priority: 'medium',
-        isPinned: true,
-        isCompleted: false,
-        tags: ['groceries', 'food'],
-        reminderSettings: {
-          enabled: true,
-          scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
-        },
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastEditedBy: 'Person1',
-        isDeleted: false,
-        version: 1
-      },
-      {
-        id: 'note_2',
-        title: 'Weekend Plans',
-        content: 'Movie night on Friday, hiking on Saturday, brunch on Sunday',
-        author: 'Person2',
-        category: 'personal',
-        priority: 'high',
-        isPinned: false,
-        isCompleted: false,
-        tags: ['weekend', 'plans'],
-        reminderSettings: {
-          enabled: true,
-          scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          repeatPattern: {
-            type: 'weekly',
-            interval: 1
-          }
-        },
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastEditedBy: 'Person2',
-        isDeleted: false,
-        version: 1
-      },
-      {
-        id: 'note_3',
-        title: 'Project Ideas',
-        content: 'Build a mobile app for couples, create a shared photo album, design a travel planner',
-        author: 'Person1',
-        category: 'ideas',
-        priority: 'low',
-        isPinned: false,
-        isCompleted: false,
-        tags: ['projects', 'ideas'],
-        reminderSettings: {
-          enabled: false
-        },
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastEditedBy: 'Person1',
-        isDeleted: false,
-        version: 1
-      }
-    ];
-    setNotes(sampleNotes);
+    setNotes([]);
   }, []);
 
   useEffect(() => {
