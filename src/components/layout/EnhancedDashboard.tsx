@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { NeumorphicNavbar } from './NeumorphicNavbar';
-import { NeumorphicCardEnhanced } from '@/components/ui/neumorphic-card-enhanced';
-import { NeumorphicButtonEnhanced } from '@/components/ui/neumorphic-button-enhanced';
+import { NeumorphicCardEnhanced } from '../ui/neumorphic-card-enhanced';
+import { NeumorphicButtonEnhanced } from '../ui/neumorphic-button-enhanced';
 import { 
   LayoutDashboard, 
   CheckSquare, 
@@ -22,12 +22,12 @@ import {
   Zap,
   Star
 } from 'lucide-react';
-import { TaskManager } from '@/components/TaskManager';
-import { FinancePlanner } from '@/components/FinancePlanner';
-import { Notes } from '@/components/Notes';
-import { Timeline } from '@/components/Timeline';
-import { BucketListManager } from '@/components/bucketList/BucketListManager';
-import { StreaksEngagement } from '@/components/StreaksEngagement';
+import { TaskManager } from '../TaskManager';
+import { FinancePlanner } from '../FinancePlanner';
+import { Notes } from '../Notes';
+import { Timeline } from '../Timeline';
+import { BucketListManager } from '../bucketList/BucketListManager';
+import { StreaksEngagement } from '../StreaksEngagement';
 
 interface EnhancedDashboardProps {
   userName?: string;
