@@ -1,13 +1,13 @@
 import { DragDropProvider } from '../components/drag-drop/DragDropProvider';
 import { AnimationProvider } from '../components/animations/AnimationProvider';
-import { SimpleEnhancedDashboard } from '../components/layout/SimpleEnhancedDashboard';
+import { TestTheme } from '../components/TestTheme';
 
 const Index = () => {
-  // Use enhanced neumorphic layout for all devices
+  // Test theme functionality first
   return (
     <DragDropProvider>
       <AnimationProvider>
-        <SimpleEnhancedDashboard userName="Person1" partnerName="Person2" />
+        <TestTheme />
       </AnimationProvider>
     </DragDropProvider>
   );
