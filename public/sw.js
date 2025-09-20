@@ -1,7 +1,7 @@
 // Service Worker for Partnership App PWA
-const CACHE_NAME = 'partnership-app-v3';
-const STATIC_CACHE = 'partnership-static-v3';
-const DYNAMIC_CACHE = 'partnership-dynamic-v3';
+const CACHE_NAME = 'partnership-app-v4';
+const STATIC_CACHE = 'partnership-static-v4';
+const DYNAMIC_CACHE = 'partnership-dynamic-v4';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -33,7 +33,15 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('Service Worker: Caching static files');
-        return cache.addAll(STATIC_FILES);
+        // Cache files one by one to handle failures gracefully
+        return Promise.allSettled(
+          STATIC_FILES.map(file => 
+            cache.add(file).catch(err => {
+              console.warn(`Service Worker: Failed to cache ${file}`, err);
+              return null; // Don't fail the entire operation
+            })
+          )
+        );
       })
       .then(() => {
         console.log('Service Worker: Static files cached');
@@ -41,6 +49,8 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('Service Worker: Failed to cache static files', error);
+        // Don't fail the installation even if caching fails
+        return self.skipWaiting();
       })
   );
 });
@@ -71,21 +81,30 @@ self.addEventListener('activate', (event) => {
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
-
+  
   // Skip non-GET requests
   if (request.method !== 'GET') {
     return;
   }
 
-  // Skip unsupported request schemes
-  if (url.protocol === 'chrome-extension:' || 
-      url.protocol === 'moz-extension:' || 
-      url.protocol === 'chrome:' ||
-      url.protocol === 'data:' ||
-      url.protocol === 'blob:' ||
-      url.protocol === 'chrome-extension' ||
-      url.protocol === 'moz-extension') {
+  try {
+    const url = new URL(request.url);
+    
+    // Skip unsupported request schemes
+    if (url.protocol === 'chrome-extension:' || 
+        url.protocol === 'moz-extension:' || 
+        url.protocol === 'chrome:' ||
+        url.protocol === 'data:' ||
+        url.protocol === 'blob:' ||
+        url.protocol === 'chrome-extension' ||
+        url.protocol === 'moz-extension' ||
+        url.href.includes('chrome-extension://') ||
+        url.href.includes('moz-extension://')) {
+      return;
+    }
+  } catch (error) {
+    // If URL parsing fails, skip the request
+    console.warn('Service Worker: Failed to parse URL', request.url, error);
     return;
   }
 
@@ -116,7 +135,9 @@ async function cacheFirst(request) {
         url.protocol === 'data:' ||
         url.protocol === 'blob:' ||
         url.protocol === 'chrome-extension' ||
-        url.protocol === 'moz-extension') {
+        url.protocol === 'moz-extension' ||
+        url.href.includes('chrome-extension://') ||
+        url.href.includes('moz-extension://')) {
       // Just fetch without caching for unsupported schemes
       return fetch(request).catch(() => new Response('Request failed', { status: 500 }));
     }
