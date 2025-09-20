@@ -1,61 +1,59 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 
 interface NeumorphicProgressProps {
   value: number;
   max?: number;
-  size?: 'sm' | 'md' | 'lg';
-  color?: 'blue' | 'green' | 'purple' | 'orange';
-  showLabel?: boolean;
+  label?: string;
   className?: string;
 }
 
 export const NeumorphicProgress: React.FC<NeumorphicProgressProps> = ({
   value,
   max = 100,
-  size = 'md',
-  color = 'blue',
-  showLabel = false,
-  className,
+  label = "Lorem ipsum",
+  className = ''
 }) => {
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-
-  const sizes = {
-    sm: 'h-2',
-    md: 'h-3',
-    lg: 'h-4',
-  };
-
-  const colors = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    purple: 'bg-purple-500',
-    orange: 'bg-orange-500',
-  };
+  const percentage = (value / max) * 100;
 
   return (
-    <div className={cn('w-full', className)}>
-      {showLabel && (
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm text-gray-500">{Math.round(percentage)}%</span>
+    <div className={`flex flex-col items-center ${className}`}>
+      <div className="relative w-24 h-24 mb-2">
+        <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+          {/* Background circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke="#e5e7eb"
+            strokeWidth="8"
+            className="shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke="url(#gradient)"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 40}`}
+            strokeDashoffset={`${2 * Math.PI * 40 * (1 - percentage / 100)}`}
+            className="transition-all duration-500"
+          />
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#14b8a6" />
+              <stop offset="100%" stopColor="#3b82f6" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-lg font-bold text-gray-700">{value}%</span>
         </div>
-      )}
-      <div
-        className={cn(
-          'w-full rounded-full bg-gray-200 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]',
-          sizes[size]
-        )}
-      >
-        <div
-          className={cn(
-            'rounded-full transition-all duration-500 ease-out shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,0.8)]',
-            colors[color],
-            sizes[size]
-          )}
-          style={{ width: `${percentage}%` }}
-        />
       </div>
+      <span className="text-xs text-gray-600 text-center">{label}</span>
     </div>
   );
 };

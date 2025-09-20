@@ -1,13 +1,13 @@
 import { DragDropProvider } from '../components/drag-drop/DragDropProvider';
 import { AnimationProvider } from '../components/animations/AnimationProvider';
-import { SimpleEnhancedDashboard } from '../components/layout/SimpleEnhancedDashboard';
+import { ExactNeumorphicDashboard } from '../components/layout/ExactNeumorphicDashboard';
 
 const Index = () => {
-  // Use enhanced neumorphic layout for all devices
+  // Use exact neumorphic layout matching the image
   return (
     <DragDropProvider>
       <AnimationProvider>
-        <SimpleEnhancedDashboard userName="Person1" partnerName="Person2" />
+        <ExactNeumorphicDashboard userName="Person1" partnerName="Person2" />
       </AnimationProvider>
     </DragDropProvider>
   );
