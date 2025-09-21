@@ -1,18 +1,14 @@
 // Service Worker for Partnership App PWA
-const CACHE_NAME = 'partnership-app-v4';
-const STATIC_CACHE = 'partnership-static-v4';
-const DYNAMIC_CACHE = 'partnership-dynamic-v4';
+const CACHE_NAME = 'partnership-app-v5';
+const STATIC_CACHE = 'partnership-static-v5';
+const DYNAMIC_CACHE = 'partnership-dynamic-v5';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
   '/',
   '/index.html',
-  '/manifest.json',
   '/favicon.ico',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/assets/hero-bg.jpg',
-  '/assets/placeholder.svg'
+  '/robots.txt'
 ];
 
 // API endpoints to cache
@@ -87,6 +83,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Early return for chrome-extension requests
+  if (request.url.includes('chrome-extension://') || 
+      request.url.includes('moz-extension://') ||
+      request.url.startsWith('chrome-extension:') ||
+      request.url.startsWith('moz-extension:') ||
+      request.url.startsWith('chrome:') ||
+      request.url.startsWith('data:') ||
+      request.url.startsWith('blob:')) {
+    return;
+  }
+
   try {
     const url = new URL(request.url);
     
@@ -126,6 +133,17 @@ self.addEventListener('fetch', (event) => {
 
 // Cache first strategy for static files
 async function cacheFirst(request) {
+  // Early return for chrome-extension requests
+  if (request.url.includes('chrome-extension://') || 
+      request.url.includes('moz-extension://') ||
+      request.url.startsWith('chrome-extension:') ||
+      request.url.startsWith('moz-extension:') ||
+      request.url.startsWith('chrome:') ||
+      request.url.startsWith('data:') ||
+      request.url.startsWith('blob:')) {
+    return fetch(request).catch(() => new Response('Request failed', { status: 500 }));
+  }
+
   try {
     // Additional check for unsupported schemes
     const url = new URL(request.url);
@@ -149,12 +167,21 @@ async function cacheFirst(request) {
 
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      try {
-        const cache = await caches.open(STATIC_CACHE);
-        await cache.put(request, networkResponse.clone());
-      } catch (cacheError) {
-        // Log cache error but don't fail the request
-        console.warn('Service Worker: Failed to cache request', request.url, cacheError);
+      // Double-check before caching to prevent chrome-extension cache errors
+      if (!request.url.includes('chrome-extension://') && 
+          !request.url.includes('moz-extension://') &&
+          !request.url.startsWith('chrome-extension:') &&
+          !request.url.startsWith('moz-extension:') &&
+          !request.url.startsWith('chrome:') &&
+          !request.url.startsWith('data:') &&
+          !request.url.startsWith('blob:')) {
+        try {
+          const cache = await caches.open(STATIC_CACHE);
+          await cache.put(request, networkResponse.clone());
+        } catch (cacheError) {
+          // Log cache error but don't fail the request
+          console.warn('Service Worker: Failed to cache request', request.url, cacheError);
+        }
       }
     }
     return networkResponse;
