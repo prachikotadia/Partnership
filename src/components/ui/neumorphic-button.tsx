@@ -1,49 +1,81 @@
 import React from 'react';
-import { Button, ButtonProps } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useTheme } from '../../contexts/ThemeContext';
 
-interface NeumorphicButtonProps extends Omit<ButtonProps, 'className'> {
-  variant?: 'primary' | 'secondary' | 'accent' | 'danger' | 'success';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+interface NeumorphicButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
   className?: string;
+  variant?: 'primary' | 'secondary' | 'icon';
+  size?: 'sm' | 'md' | 'lg';
+  active?: boolean;
   icon?: React.ReactNode;
 }
 
 export const NeumorphicButton: React.FC<NeumorphicButtonProps> = ({
   children,
-  className,
-  variant = 'primary',
+  onClick,
+  className = '',
+  variant = 'secondary',
   size = 'md',
-  icon,
-  ...props
+  active = false,
+  icon
 }) => {
-  const variants = {
-    primary: 'bg-blue-500 text-white shadow-[8px_8px_16px_rgba(59,130,246,0.3),-8px_-8px_16px_rgba(255,255,255,0.1)] hover:shadow-[12px_12px_24px_rgba(59,130,246,0.4),-12px_-12px_24px_rgba(255,255,255,0.2)] active:shadow-[inset_4px_4px_8px_rgba(59,130,246,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.1)]',
-    secondary: 'bg-gray-200 text-gray-700 shadow-[8px_8px_16px_rgba(0,0,0,0.1),-8px_-8px_16px_rgba(255,255,255,0.8)] hover:shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.1),inset_-4px_-4px_8px_rgba(255,255,255,0.8)]',
-    accent: 'bg-purple-500 text-white shadow-[8px_8px_16px_rgba(147,51,234,0.3),-8px_-8px_16px_rgba(255,255,255,0.1)] hover:shadow-[12px_12px_24px_rgba(147,51,234,0.4),-12px_-12px_24px_rgba(255,255,255,0.2)] active:shadow-[inset_4px_4px_8px_rgba(147,51,234,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.1)]',
-    danger: 'bg-red-500 text-white shadow-[8px_8px_16px_rgba(239,68,68,0.3),-8px_-8px_16px_rgba(255,255,255,0.1)] hover:shadow-[12px_12px_24px_rgba(239,68,68,0.4),-12px_-12px_24px_rgba(255,255,255,0.2)] active:shadow-[inset_4px_4px_8px_rgba(239,68,68,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.1)]',
-    success: 'bg-green-500 text-white shadow-[8px_8px_16px_rgba(34,197,94,0.3),-8px_-8px_16px_rgba(255,255,255,0.1)] hover:shadow-[12px_12px_24px_rgba(34,197,94,0.4),-12px_-12px_24px_rgba(255,255,255,0.2)] active:shadow-[inset_4px_4px_8px_rgba(34,197,94,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.1)]',
+  const { theme } = useTheme();
+
+  const getSizeStyles = () => {
+    switch (size) {
+      case 'sm':
+        return 'px-3 py-2 text-sm rounded-lg';
+      case 'md':
+        return 'px-4 py-3 text-base rounded-xl';
+      case 'lg':
+        return 'px-6 py-4 text-lg rounded-2xl';
+      default:
+        return 'px-4 py-3 text-base rounded-xl';
+    }
   };
 
-  const sizes = {
-    sm: 'h-8 px-3 text-xs rounded-2xl',
-    md: 'h-10 px-4 text-sm rounded-2xl',
-    lg: 'h-12 px-6 text-base rounded-3xl',
-    xl: 'h-14 px-8 text-lg rounded-3xl',
+  const getVariantStyles = () => {
+    if (variant === 'primary') {
+      return active
+        ? 'bg-gradient-to-r from-teal-400 to-blue-500 text-white shadow-[inset_2px_2px_4px_rgba(0,0,0,0.2),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
+        : 'bg-gradient-to-r from-teal-400 to-blue-500 text-white shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.2)]';
+    }
+    
+    if (variant === 'icon') {
+      return active
+        ? theme === 'dark'
+          ? 'bg-gray-700 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.8),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
+          : 'bg-gray-200 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]'
+        : theme === 'dark'
+          ? 'bg-gray-800 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.8)]'
+          : 'bg-gray-100 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(0,0,0,0.1)]';
+    }
+
+    return active
+      ? theme === 'dark'
+        ? 'bg-gray-700 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.8),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
+        : 'bg-gray-200 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]'
+      : theme === 'dark'
+        ? 'bg-gray-800 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.8)]'
+        : 'bg-gray-100 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(0,0,0,0.1)]';
   };
 
   return (
-    <Button
-      className={cn(
-        'font-medium transition-all duration-300 ease-out border-0',
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      {...props}
+    <button
+      onClick={onClick}
+      className={`
+        ${getSizeStyles()}
+        ${getVariantStyles()}
+        ${className}
+        transition-all duration-200
+        hover:scale-105 active:scale-95
+        flex items-center justify-center gap-2
+        ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
+      `}
     >
-      {icon && <span className="mr-2">{icon}</span>}
+      {icon && <span className="flex-shrink-0">{icon}</span>}
       {children}
-    </Button>
+    </button>
   );
 };

@@ -1,38 +1,58 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { useTheme } from '../../contexts/ThemeContext';
 
-interface NeumorphicInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  variant?: 'primary' | 'secondary';
-  size?: 'sm' | 'md' | 'lg';
+interface NeumorphicInputProps {
+  placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
   className?: string;
+  type?: 'text' | 'search';
+  icon?: React.ReactNode;
+  variant?: 'elevated' | 'pressed';
 }
 
 export const NeumorphicInput: React.FC<NeumorphicInputProps> = ({
-  className,
-  variant = 'primary',
-  size = 'md',
-  ...props
+  placeholder,
+  value,
+  onChange,
+  className = '',
+  type = 'text',
+  icon,
+  variant = 'elevated'
 }) => {
-  const variants = {
-    primary: 'bg-gray-100 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]',
-    secondary: 'bg-gray-200 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]'
-  };
+  const { theme } = useTheme();
 
-  const sizes = {
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-3 text-base',
-    lg: 'px-6 py-4 text-lg'
+  const getVariantStyles = () => {
+    if (variant === 'pressed') {
+      return theme === 'dark'
+        ? 'bg-gray-800 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.8),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
+        : 'bg-gray-100 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]';
+    }
+    return theme === 'dark'
+      ? 'bg-gray-800 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.8)]'
+      : 'bg-gray-100 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(0,0,0,0.1)]';
   };
 
   return (
-    <input
-      className={cn(
-        'w-full rounded-2xl border-0 focus:outline-none focus:ring-0 text-gray-700 placeholder-gray-500 transition-all duration-200',
-        variants[variant],
-        sizes[size],
-        className
+    <div className={`relative ${className}`}>
+      {icon && (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+          {icon}
+        </div>
       )}
-      {...props}
-    />
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+        className={`
+          w-full px-4 py-3 rounded-xl border-0 outline-none transition-all duration-200
+          ${getVariantStyles()}
+          ${icon ? 'pl-10' : ''}
+          ${theme === 'dark' ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'}
+          focus:shadow-lg
+        `}
+      />
+    </div>
   );
 };

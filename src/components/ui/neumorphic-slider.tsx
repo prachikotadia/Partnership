@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface NeumorphicSliderProps {
-  value?: number;
-  onChange?: (value: number) => void;
+  value: number;
+  onChange: (value: number) => void;
   min?: number;
   max?: number;
   step?: number;
@@ -10,41 +11,85 @@ interface NeumorphicSliderProps {
 }
 
 export const NeumorphicSlider: React.FC<NeumorphicSliderProps> = ({
-  value = 50,
+  value,
   onChange,
   min = 0,
   max = 100,
   step = 1,
   className = ''
 }) => {
-  const [sliderValue, setSliderValue] = useState(value);
+  const { theme } = useTheme();
+  const [isDragging, setIsDragging] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value);
-    setSliderValue(newValue);
-    onChange?.(newValue);
+  const percentage = ((value - min) / (max - min)) * 100;
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    updateValue(e);
   };
 
-  const percentage = ((sliderValue - min) / (max - min)) * 100;
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDragging) {
+      updateValue(e);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const updateValue = (e: MouseEvent | React.MouseEvent) => {
+    if (!sliderRef.current) return;
+    
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    const newValue = min + (percentage / 100) * (max - min);
+    const steppedValue = Math.round(newValue / step) * step;
+    
+    onChange(Math.max(min, Math.min(max, steppedValue)));
+  };
+
+  React.useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging]);
 
   return (
     <div className={`relative ${className}`}>
-      <div className="relative h-2 bg-gray-200 rounded-full shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]">
-        <div 
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-teal-400 to-blue-500 rounded-full transition-all duration-200"
+      <div
+        ref={sliderRef}
+        className={`
+          w-full h-2 rounded-full cursor-pointer
+          ${theme === 'dark'
+            ? 'bg-gray-800 shadow-[inset_-1px_-1px_2px_rgba(255,255,255,0.1),inset_1px_1px_2px_rgba(0,0,0,0.8)]'
+            : 'bg-gray-100 shadow-[inset_-1px_-1px_2px_rgba(255,255,255,0.8),inset_1px_1px_2px_rgba(0,0,0,0.1)]'
+          }
+        `}
+        onMouseDown={handleMouseDown}
+      >
+        <div
+          className={`
+            h-full rounded-full transition-all duration-200
+            bg-gradient-to-r from-teal-400 to-blue-500
+            ${isDragging ? 'shadow-lg' : ''}
+          `}
           style={{ width: `${percentage}%` }}
         />
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={sliderValue}
-          onChange={handleChange}
-          className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-        />
-        <div 
-          className="absolute top-1/2 w-4 h-4 bg-white rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.2)] transform -translate-y-1/2 transition-all duration-200"
+        <div
+          className={`
+            absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full cursor-pointer
+            bg-white shadow-[2px_2px_4px_rgba(0,0,0,0.2)]
+            transition-all duration-200
+            ${isDragging ? 'scale-110 shadow-lg' : 'hover:scale-105'}
+          `}
           style={{ left: `calc(${percentage}% - 8px)` }}
         />
       </div>

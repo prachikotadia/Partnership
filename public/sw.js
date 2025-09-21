@@ -1,14 +1,18 @@
 // Service Worker for Partnership App PWA
-const CACHE_NAME = 'partnership-app-v5';
-const STATIC_CACHE = 'partnership-static-v5';
-const DYNAMIC_CACHE = 'partnership-dynamic-v5';
+const CACHE_NAME = 'partnership-app-v1';
+const STATIC_CACHE = 'partnership-static-v1';
+const DYNAMIC_CACHE = 'partnership-dynamic-v1';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
   '/',
   '/index.html',
+  '/manifest.json',
   '/favicon.ico',
-  '/robots.txt'
+  '/static/js/bundle.js',
+  '/static/css/main.css',
+  '/assets/hero-bg.jpg',
+  '/assets/placeholder.svg'
 ];
 
 // API endpoints to cache
@@ -29,15 +33,7 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('Service Worker: Caching static files');
-        // Cache files one by one to handle failures gracefully
-        return Promise.allSettled(
-          STATIC_FILES.map(file => 
-            cache.add(file).catch(err => {
-              console.warn(`Service Worker: Failed to cache ${file}`, err);
-              return null; // Don't fail the entire operation
-            })
-          )
-        );
+        return cache.addAll(STATIC_FILES);
       })
       .then(() => {
         console.log('Service Worker: Static files cached');
@@ -45,8 +41,6 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.error('Service Worker: Failed to cache static files', error);
-        // Don't fail the installation even if caching fails
-        return self.skipWaiting();
       })
   );
 });
@@ -77,41 +71,10 @@ self.addEventListener('activate', (event) => {
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  
+  const url = new URL(request.url);
+
   // Skip non-GET requests
   if (request.method !== 'GET') {
-    return;
-  }
-
-  // Early return for chrome-extension requests
-  if (request.url.includes('chrome-extension://') || 
-      request.url.includes('moz-extension://') ||
-      request.url.startsWith('chrome-extension:') ||
-      request.url.startsWith('moz-extension:') ||
-      request.url.startsWith('chrome:') ||
-      request.url.startsWith('data:') ||
-      request.url.startsWith('blob:')) {
-    return;
-  }
-
-  try {
-    const url = new URL(request.url);
-    
-    // Skip unsupported request schemes
-    if (url.protocol === 'chrome-extension:' || 
-        url.protocol === 'moz-extension:' || 
-        url.protocol === 'chrome:' ||
-        url.protocol === 'data:' ||
-        url.protocol === 'blob:' ||
-        url.protocol === 'chrome-extension' ||
-        url.protocol === 'moz-extension' ||
-        url.href.includes('chrome-extension://') ||
-        url.href.includes('moz-extension://')) {
-      return;
-    }
-  } catch (error) {
-    // If URL parsing fails, skip the request
-    console.warn('Service Worker: Failed to parse URL', request.url, error);
     return;
   }
 
@@ -133,33 +96,7 @@ self.addEventListener('fetch', (event) => {
 
 // Cache first strategy for static files
 async function cacheFirst(request) {
-  // Early return for chrome-extension requests
-  if (request.url.includes('chrome-extension://') || 
-      request.url.includes('moz-extension://') ||
-      request.url.startsWith('chrome-extension:') ||
-      request.url.startsWith('moz-extension:') ||
-      request.url.startsWith('chrome:') ||
-      request.url.startsWith('data:') ||
-      request.url.startsWith('blob:')) {
-    return fetch(request).catch(() => new Response('Request failed', { status: 500 }));
-  }
-
   try {
-    // Additional check for unsupported schemes
-    const url = new URL(request.url);
-    if (url.protocol === 'chrome-extension:' || 
-        url.protocol === 'moz-extension:' || 
-        url.protocol === 'chrome:' ||
-        url.protocol === 'data:' ||
-        url.protocol === 'blob:' ||
-        url.protocol === 'chrome-extension' ||
-        url.protocol === 'moz-extension' ||
-        url.href.includes('chrome-extension://') ||
-        url.href.includes('moz-extension://')) {
-      // Just fetch without caching for unsupported schemes
-      return fetch(request).catch(() => new Response('Request failed', { status: 500 }));
-    }
-
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
@@ -167,22 +104,8 @@ async function cacheFirst(request) {
 
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      // Double-check before caching to prevent chrome-extension cache errors
-      if (!request.url.includes('chrome-extension://') && 
-          !request.url.includes('moz-extension://') &&
-          !request.url.startsWith('chrome-extension:') &&
-          !request.url.startsWith('moz-extension:') &&
-          !request.url.startsWith('chrome:') &&
-          !request.url.startsWith('data:') &&
-          !request.url.startsWith('blob:')) {
-        try {
-          const cache = await caches.open(STATIC_CACHE);
-          await cache.put(request, networkResponse.clone());
-        } catch (cacheError) {
-          // Log cache error but don't fail the request
-          console.warn('Service Worker: Failed to cache request', request.url, cacheError);
-        }
-      }
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
     }
     return networkResponse;
   } catch (error) {
@@ -196,13 +119,8 @@ async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
-      try {
-        const cache = await caches.open(DYNAMIC_CACHE);
-        await cache.put(request, networkResponse.clone());
-      } catch (cacheError) {
-        // Log cache error but don't fail the request
-        console.warn('Service Worker: Failed to cache API request', request.url, cacheError);
-      }
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, networkResponse.clone());
     }
     return networkResponse;
   } catch (error) {

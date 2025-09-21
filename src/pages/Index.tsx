@@ -3,11 +3,11 @@ import { AnimationProvider } from '../components/animations/AnimationProvider';
 import { ExactNeumorphicDashboard } from '../components/layout/ExactNeumorphicDashboard';
 
 const Index = () => {
-  // Use exact neumorphic layout matching the image
+  // Use exact neumorphic dashboard matching the image
   return (
     <DragDropProvider>
       <AnimationProvider>
-        <ExactNeumorphicDashboard userName="Person1" partnerName="Person2" />
+        <ExactNeumorphicDashboard />
       </AnimationProvider>
     </DragDropProvider>
   );

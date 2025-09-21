@@ -315,26 +315,6 @@ class SupabaseAuthService {
       });
 
       if (authError) {
-        console.error('Auth registration error:', authError);
-        
-        // Handle specific error cases
-        if (authError.message.includes('already registered') || 
-            authError.message.includes('already exists') ||
-            authError.message.includes('duplicate key')) {
-          return {
-            success: false,
-            message: 'User with this email already exists. Please try logging in instead.'
-          };
-        }
-        
-        // Handle rate limiting
-        if (authError.status === 429 || authError.message.includes('rate limit') || authError.message.includes('too many requests')) {
-          return {
-            success: false,
-            message: 'Too many registration attempts. Please wait a few minutes and try again.'
-          };
-        }
-        
         return {
           success: false,
           message: authError.message || 'Registration failed'
@@ -348,17 +328,16 @@ class SupabaseAuthService {
         };
       }
 
-      // Create user profile in public.users table (use upsert to handle duplicates)
+      // Create user profile in public.users table
       const { error: profileError } = await supabase
         .from('users')
-        .upsert({
+        .insert({
           id: authData.user.id,
           email: data.email,
           name: data.name,
           username: data.name.toLowerCase().replace(/\s+/g, '_'),
+          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'id'
         });
 
       if (profileError) {
