@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, AuthSession, LoginCredentials, RegisterData, PasswordResetData, PasswordResetConfirmData, MagicLinkData } from '@/services/supabaseAuthService';
-import { supabaseAuthService } from '@/services/supabaseAuthService';
+import { User, AuthSession, LoginCredentials, RegisterData, PasswordResetData, PasswordResetConfirmData, MagicLinkData } from '../services/supabaseAuthService';
+import { supabaseAuthService } from '../services/supabaseAuthService';
 
 interface AuthContextType {
   user: User | null;
@@ -10,12 +10,13 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; requiresTwoFactor?: boolean; message?: string }>;
   register: (data: RegisterData) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
-  sendPasswordReset: (data: PasswordResetData) => Promise<{ success: boolean; message?: string }>;
-  confirmPasswordReset: (data: PasswordResetConfirmData) => Promise<{ success: boolean; message?: string }>;
-  sendMagicLink: (data: MagicLinkData) => Promise<{ success: boolean; message?: string }>;
-  setupTwoFactor: () => Promise<{ secret: string; qrCode: string; backupCodes: string[] }>;
-  enableTwoFactor: (secret: string, code: string) => Promise<{ success: boolean; message?: string }>;
-  disableTwoFactor: (password: string) => Promise<{ success: boolean; message?: string }>;
+  // Password reset and magic link features will be implemented later
+  // sendPasswordReset: (data: PasswordResetData) => Promise<{ success: boolean; message?: string }>;
+  // confirmPasswordReset: (data: PasswordResetConfirmData) => Promise<{ success: boolean; message?: string }>;
+  // sendMagicLink: (data: MagicLinkData) => Promise<{ success: boolean; message?: string }>;
+  // setupTwoFactor: () => Promise<{ secret: string; qrCode: string; backupCodes: string[] }>;
+  // enableTwoFactor: (secret: string, code: string) => Promise<{ success: boolean; message?: string }>;
+  // disableTwoFactor: (password: string) => Promise<{ success: boolean; message?: string }>;
   pairWithPartner: (partnerEmail: string) => Promise<{ success: boolean; message?: string }>;
   unpairPartner: () => Promise<{ success: boolean; message?: string }>;
   refreshSession: () => Promise<void>;
@@ -93,65 +94,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const sendPasswordReset = async (data: PasswordResetData) => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.sendPasswordReset(data);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const confirmPasswordReset = async (data: PasswordResetConfirmData) => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.confirmPasswordReset(data);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const sendMagicLink = async (data: MagicLinkData) => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.sendMagicLink(data);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const setupTwoFactor = async () => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.setupTwoFactor();
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const enableTwoFactor = async (secret: string, code: string) => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.enableTwoFactor(secret, code);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const disableTwoFactor = async (password: string) => {
-    setIsLoading(true);
-    try {
-      const result = await supabaseAuthService.disableTwoFactor(password);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Password reset and magic link features will be implemented later
 
   const pairWithPartner = async (partnerEmail: string) => {
     setIsLoading(true);
@@ -196,12 +139,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
-    sendPasswordReset,
-    confirmPasswordReset,
-    sendMagicLink,
-    setupTwoFactor,
-    enableTwoFactor,
-    disableTwoFactor,
+    // Password reset and magic link features will be implemented later
+    // sendPasswordReset,
+    // confirmPasswordReset,
+    // sendMagicLink,
+    // setupTwoFactor,
+    // enableTwoFactor,
+    // disableTwoFactor,
     pairWithPartner,
     unpairPartner,
     refreshSession,
