@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 interface NeumorphicButtonProps {
   children: React.ReactNode;
@@ -20,7 +19,7 @@ export const NeumorphicButton: React.FC<NeumorphicButtonProps> = ({
   active = false,
   icon
 }) => {
-  const { theme } = useTheme();
+  const theme = 'light'; // Default theme for now
 
   const getSizeStyles = () => {
     switch (size) {

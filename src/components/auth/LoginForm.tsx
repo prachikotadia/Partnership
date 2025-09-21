@@ -16,7 +16,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { NeumorphicCard } from '../ui/neumorphic-card';
 import { NeumorphicButton } from '../ui/neumorphic-button';
-import { NeumorphicInput } from '../ui/neumorphic-input-new';
+import { NeumorphicInput } from '../ui/neumorphic-input';
 import { TwoFactorModal } from './TwoFactorModal';
 import { MagicLinkModal } from './MagicLinkModal';
 // EmailVerificationModal removed - using username/password login

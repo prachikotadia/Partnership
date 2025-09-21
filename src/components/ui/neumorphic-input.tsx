@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 interface NeumorphicInputProps {
   placeholder?: string;
@@ -20,7 +19,7 @@ export const NeumorphicInput: React.FC<NeumorphicInputProps> = ({
   icon,
   variant = 'elevated'
 }) => {
-  const { theme } = useTheme();
+  const theme = 'light'; // Default theme for now
 
   const getVariantStyles = () => {
     if (variant === 'pressed') {
