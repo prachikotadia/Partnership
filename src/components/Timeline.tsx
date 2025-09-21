@@ -44,13 +44,43 @@ interface TimelineEvent {
   date: Date;
   category: 'travel' | 'relationship' | 'work' | 'personal' | 'milestone';
   location?: string;
-  createdBy: 'Person1' | 'Person2';
-  participants: ('Person1' | 'Person2')[];
+  createdBy: 'Alex' | 'Sam';
+  participants: ('Alex' | 'Sam')[];
   completed?: boolean;
 }
 
 export function Timeline() {
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
+  const [events, setEvents] = useState<TimelineEvent[]>([
+    {
+      id: '1',
+      title: 'Weekend Trip to Paris',
+      description: 'Romantic getaway for our anniversary. Book hotels and plan itinerary.',
+      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      category: 'travel',
+      location: 'Paris, France',
+      createdBy: 'Alex',
+      participants: ['Alex', 'Sam'],
+    },
+    {
+      id: '2', 
+      title: 'Anniversary Dinner',
+      description: 'Celebrate our 2-year anniversary at the fancy restaurant downtown.',
+      date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      category: 'relationship',
+      location: 'Downtown Restaurant',
+      createdBy: 'Sam',
+      participants: ['Alex', 'Sam'],
+    },
+    {
+      id: '3',
+      title: 'Move to New Apartment',
+      description: 'Final decision on the apartment and start moving process.',
+      date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      category: 'milestone',
+      createdBy: 'Alex',
+      participants: ['Alex', 'Sam'],
+    },
+  ]);
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -71,8 +101,8 @@ export function Timeline() {
         date: new Date(newEvent.date),
         category: newEvent.category,
         location: newEvent.location,
-        createdBy: 'Person1',
-        participants: ['Person1', 'Person2'],
+        createdBy: 'Alex',
+        participants: ['Alex', 'Sam'],
       };
       setEvents([...events, event].sort((a, b) => a.date.getTime() - b.date.getTime()));
       setNewEvent({

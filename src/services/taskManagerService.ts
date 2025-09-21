@@ -517,11 +517,125 @@ class TaskManagerService {
     }
   }
 
-  // Initialize with empty state
+  // Sample Data
   private initializeSampleData() {
-    // No sample data - start with empty state
     if (this.tasks.length === 0) {
-      this.tasks = [];
+      const sampleTasks: Task[] = [
+        {
+          id: 'task_1',
+          title: 'Plan anniversary celebration',
+          description: 'Book restaurant, buy gifts, plan surprise activities for our special day',
+          priority: 'high',
+          status: 'in-progress',
+          dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: [this.currentUser, this.partnerUser],
+          tags: ['anniversary', 'celebration', 'romantic'],
+          subtasks: [
+            { id: 'sub_1', title: 'Book romantic dinner', completed: true, createdAt: new Date().toISOString() },
+            { id: 'sub_2', title: 'Buy anniversary gift', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_3', title: 'Plan surprise activity', completed: false, createdAt: new Date().toISOString() }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.currentUser,
+          category: 'shared-goals',
+          isRecurring: false,
+          isDeleted: false
+        },
+        {
+          id: 'task_2',
+          title: 'Review monthly budget together',
+          description: 'Check expenses, adjust categories, plan for next month, discuss savings goals',
+          priority: 'medium',
+          status: 'todo',
+          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: [this.currentUser, this.partnerUser],
+          tags: ['finance', 'monthly', 'budget'],
+          subtasks: [
+            { id: 'sub_4', title: 'Review last month expenses', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_5', title: 'Set next month budget', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_6', title: 'Discuss savings goals', completed: false, createdAt: new Date().toISOString() }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          category: 'finance',
+          isRecurring: true,
+          recurringPattern: 'monthly',
+          isDeleted: false
+        },
+        {
+          id: 'task_3',
+          title: 'Plan weekend date night',
+          description: 'Choose movie, book tickets, plan dinner, create romantic atmosphere',
+          priority: 'medium',
+          status: 'completed',
+          dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: [this.currentUser],
+          tags: ['date-night', 'weekend', 'romantic'],
+          subtasks: [
+            { id: 'sub_7', title: 'Book movie tickets', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString() },
+            { id: 'sub_8', title: 'Reserve dinner table', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString() },
+            { id: 'sub_9', title: 'Buy flowers', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString() }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          category: 'shared-goals',
+          isRecurring: false,
+          isDeleted: false
+        },
+        {
+          id: 'task_4',
+          title: 'Plan future vacation together',
+          description: 'Research destinations, save money, plan itinerary for our dream trip',
+          priority: 'low',
+          status: 'todo',
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: [this.currentUser, this.partnerUser],
+          tags: ['vacation', 'travel', 'future-planning'],
+          subtasks: [
+            { id: 'sub_10', title: 'Research destinations', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_11', title: 'Set savings goal', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_12', title: 'Create travel bucket list', completed: false, createdAt: new Date().toISOString() }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.currentUser,
+          category: 'travel',
+          isRecurring: false,
+          isDeleted: false
+        },
+        {
+          id: 'task_5',
+          title: 'Weekly relationship check-in',
+          description: 'Discuss how we\'re feeling, share appreciation, plan quality time',
+          priority: 'medium',
+          status: 'todo',
+          dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+          assignedTo: [this.currentUser, this.partnerUser],
+          tags: ['relationship', 'communication', 'weekly'],
+          subtasks: [
+            { id: 'sub_13', title: 'Share what we appreciate about each other', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_14', title: 'Discuss any concerns', completed: false, createdAt: new Date().toISOString() },
+            { id: 'sub_15', title: 'Plan quality time activities', completed: false, createdAt: new Date().toISOString() }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          category: 'shared-goals',
+          isRecurring: true,
+          recurringPattern: 'weekly',
+          isDeleted: false
+        }
+      ];
+
+      this.tasks = sampleTasks;
       this.saveTasks();
     }
   }

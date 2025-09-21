@@ -7,10 +7,10 @@ import {
   CheckCircle2,
   ArrowRight
 } from 'lucide-react';
-import { NeumorphicCard } from '../ui/neumorphic-card';
-import { NeumorphicButton } from '../ui/neumorphic-button';
-import { NeumorphicInput } from '../ui/neumorphic-input';
-import { supabaseAuthService } from '../../services/supabaseAuthService';
+import { NeumorphicCard } from '@/components/ui/neumorphic-card';
+import { NeumorphicButton } from '@/components/ui/neumorphic-button';
+import { NeumorphicInput } from '@/components/ui/neumorphic-input';
+import { supabaseAuthService } from '@/services/supabaseAuthService';
 
 interface ForgotPasswordProps {
   onBack: () => void;

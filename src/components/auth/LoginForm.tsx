@@ -13,10 +13,10 @@ import {
   Heart,
   Sparkles
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { NeumorphicCard } from '../ui/neumorphic-card';
-import { NeumorphicButton } from '../ui/neumorphic-button';
-import { NeumorphicInput } from '../ui/neumorphic-input';
+import { useAuth } from '@/contexts/AuthContext';
+import { NeumorphicCard } from '@/components/ui/neumorphic-card';
+import { NeumorphicButton } from '@/components/ui/neumorphic-button';
+import { NeumorphicInput } from '@/components/ui/neumorphic-input';
 import { TwoFactorModal } from './TwoFactorModal';
 import { MagicLinkModal } from './MagicLinkModal';
 // EmailVerificationModal removed - using username/password login

@@ -1,74 +1,66 @@
-import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import React, { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface NeumorphicToggleProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  className?: string;
   size?: 'sm' | 'md' | 'lg';
+  color?: 'blue' | 'green' | 'purple' | 'red';
+  disabled?: boolean;
+  className?: string;
 }
 
 export const NeumorphicToggle: React.FC<NeumorphicToggleProps> = ({
   checked,
   onChange,
-  className = '',
-  size = 'md'
+  size = 'md',
+  color = 'blue',
+  disabled = false,
+  className,
 }) => {
-  const { theme } = useTheme();
-
-  const getSizeStyles = () => {
-    switch (size) {
-      case 'sm':
-        return 'w-8 h-4';
-      case 'md':
-        return 'w-12 h-6';
-      case 'lg':
-        return 'w-16 h-8';
-      default:
-        return 'w-12 h-6';
-    }
+  const sizes = {
+    sm: 'w-10 h-6',
+    md: 'w-12 h-7',
+    lg: 'w-14 h-8',
   };
 
-  const getThumbSizeStyles = () => {
-    switch (size) {
-      case 'sm':
-        return 'w-3 h-3';
-      case 'md':
-        return 'w-5 h-5';
-      case 'lg':
-        return 'w-7 h-7';
-      default:
-        return 'w-5 h-5';
-    }
+  const colors = {
+    blue: checked ? 'bg-blue-500' : 'bg-gray-300',
+    green: checked ? 'bg-green-500' : 'bg-gray-300',
+    purple: checked ? 'bg-purple-500' : 'bg-gray-300',
+    red: checked ? 'bg-red-500' : 'bg-gray-300',
+  };
+
+  const thumbSizes = {
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
+  };
+
+  const thumbPositions = {
+    sm: checked ? 'translate-x-4' : 'translate-x-0',
+    md: checked ? 'translate-x-5' : 'translate-x-0',
+    lg: checked ? 'translate-x-6' : 'translate-x-0',
   };
 
   return (
     <button
-      onClick={() => onChange(!checked)}
-      className={`
-        ${getSizeStyles()}
-        ${className}
-        rounded-full transition-all duration-300
-        ${checked
-          ? 'bg-gradient-to-r from-teal-400 to-blue-500 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.2),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
-          : theme === 'dark'
-            ? 'bg-gray-800 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.8)]'
-            : 'bg-gray-100 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(0,0,0,0.1)]'
-        }
-        focus:outline-none
-      `}
+      className={cn(
+        'relative inline-flex items-center rounded-full transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
+        sizes[size],
+        colors[color],
+        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+        className
+      )}
+      onClick={() => !disabled && onChange(!checked)}
+      disabled={disabled}
     >
-      <div
-        className={`
-          ${getThumbSizeStyles()}
-          rounded-full transition-all duration-300
-          ${checked
-            ? 'bg-white shadow-[2px_2px_4px_rgba(0,0,0,0.2)] transform translate-x-6'
-            : theme === 'dark'
-              ? 'bg-gray-600 shadow-[2px_2px_4px_rgba(0,0,0,0.8)] transform translate-x-0'
-              : 'bg-white shadow-[2px_2px_4px_rgba(0,0,0,0.1)] transform translate-x-0'
-          }
-        `}
+      <span
+        className={cn(
+          'inline-block rounded-full bg-white shadow-lg transform transition-transform duration-300 ease-out',
+          thumbSizes[size],
+          thumbPositions[size]
+        )}
       />
     </button>
   );

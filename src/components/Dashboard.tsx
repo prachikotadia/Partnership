@@ -21,7 +21,7 @@ interface DashboardProps {
 }
 
 export function Dashboard({ userName = "Person1", partnerName = "Person2" }: DashboardProps) {
-  const [streakCount, setStreakCount] = useState(0);
+  const [streakCount, setStreakCount] = useState(12);
   const [todayCheckedIn, setTodayCheckedIn] = useState(false);
 
   const handleCheckIn = () => {
@@ -30,13 +30,23 @@ export function Dashboard({ userName = "Person1", partnerName = "Person2" }: Das
   };
 
   const quickStats = [
-    { label: "Monthly Budget", value: "$0", change: "No budget set", icon: DollarSign, color: "teal" },
-    { label: "Tasks Done", value: "0/0", change: "No tasks yet", icon: CheckCircle2, color: "coral" },
-    { label: "Savings Goal", value: "0%", change: "No goals set", icon: Target, color: "lavender" },
+    { label: "Monthly Budget", value: "$2,450", change: "-$320", icon: DollarSign, color: "teal" },
+    { label: "Tasks Done", value: "8/12", change: "+3 today", icon: CheckCircle2, color: "coral" },
+    { label: "Savings Goal", value: "68%", change: "$1,200 left", icon: Target, color: "lavender" },
   ];
 
-  const recentTasks: any[] = [];
-  const upcomingEvents: any[] = [];
+  const recentTasks = [
+    { id: 1, title: "Buy groceries for weekend", assignee: "Person2", completed: false, priority: "high" },
+    { id: 2, title: "Book flight tickets", assignee: "Person1", completed: true, priority: "medium" },
+    { id: 3, title: "Plan anniversary dinner", assignee: "Person2", completed: false, priority: "high" },
+    { id: 4, title: "Update shared calendar", assignee: "Person1", completed: false, priority: "low" },
+  ];
+
+  const upcomingEvents = [
+    { id: 1, title: "Video date night", date: "Tonight 8PM", type: "relationship" },
+    { id: 2, title: "Rent payment due", date: "Tomorrow", type: "finance" },
+    { id: 3, title: "Person2's birthday prep", date: "In 3 days", type: "celebration" },
+  ];
 
   return (
     <div className="min-h-screen p-4 space-y-6">
@@ -113,33 +123,25 @@ export function Dashboard({ userName = "Person1", partnerName = "Person2" }: Das
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {recentTasks.length === 0 ? (
-              <div className="text-center py-8">
-                <CheckCircle2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No tasks yet</h3>
-                <p className="text-muted-foreground">Add your first task to get started!</p>
-              </div>
-            ) : (
-              recentTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between p-3 glass-card rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      task.priority === 'high' ? 'bg-red-500' :
-                      task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                    }`} />
-                    <div>
-                      <p className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                        {task.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Assigned to {task.assignee}</p>
-                    </div>
-                  </div>
-                  <div className="w-5 h-5 rounded-full border-2 border-muted-foreground flex items-center justify-center">
-                    {task.completed && <div className="w-2 h-2 bg-success rounded-full" />}
+            {recentTasks.map((task) => (
+              <div key={task.id} className="flex items-center justify-between p-3 glass-card rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${
+                    task.priority === 'high' ? 'bg-red-500' :
+                    task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                  }`} />
+                  <div>
+                    <p className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                      {task.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Assigned to {task.assignee}</p>
                   </div>
                 </div>
-              ))
-            )}
+                <div className="w-5 h-5 rounded-full border-2 border-muted-foreground flex items-center justify-center">
+                  {task.completed && <div className="w-2 h-2 bg-success rounded-full" />}
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -155,29 +157,21 @@ export function Dashboard({ userName = "Person1", partnerName = "Person2" }: Das
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {upcomingEvents.length === 0 ? (
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No events scheduled</h3>
-                <p className="text-muted-foreground">Add your first event to get started!</p>
-              </div>
-            ) : (
-              upcomingEvents.map((event) => (
-                <div key={event.id} className="flex items-center gap-3 p-3 glass-card rounded-lg">
-                  <div className={`w-3 h-3 rounded-full ${
-                    event.type === 'relationship' ? 'bg-gradient-primary' :
-                    event.type === 'finance' ? 'bg-gradient-teal' : 'bg-gradient-coral'
-                  }`} />
-                  <div className="flex-1">
-                    <p className="font-medium">{event.title}</p>
-                    <p className="text-xs text-muted-foreground">{event.date}</p>
-                  </div>
-                  <Badge variant="secondary" className="glass-card text-xs">
-                    {event.type}
-                  </Badge>
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="flex items-center gap-3 p-3 glass-card rounded-lg">
+                <div className={`w-3 h-3 rounded-full ${
+                  event.type === 'relationship' ? 'bg-gradient-primary' :
+                  event.type === 'finance' ? 'bg-gradient-teal' : 'bg-gradient-coral'
+                }`} />
+                <div className="flex-1">
+                  <p className="font-medium">{event.title}</p>
+                  <p className="text-xs text-muted-foreground">{event.date}</p>
                 </div>
-              ))
-            )}
+                <Badge variant="secondary" className="glass-card text-xs">
+                  {event.type}
+                </Badge>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>

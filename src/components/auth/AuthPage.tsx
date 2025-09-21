@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { SimpleLoginForm } from './SimpleLoginForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { PasswordResetFlow } from './PasswordResetFlow';
 import { 
@@ -67,7 +67,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ className = '' }) => {
     switch (mode) {
       case 'login':
         return (
-          <SimpleLoginForm
+          <LoginForm
             onSwitchToRegister={() => setMode('register')}
             onSwitchToForgotPassword={() => setMode('forgot-password')}
           />

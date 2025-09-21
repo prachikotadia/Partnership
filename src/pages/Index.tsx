@@ -1,13 +1,13 @@
-import { DragDropProvider } from '../components/drag-drop/DragDropProvider';
-import { AnimationProvider } from '../components/animations/AnimationProvider';
-import { ExactNeumorphicDashboard } from '../components/layout/ExactNeumorphicDashboard';
+import { DragDropProvider } from '@/components/drag-drop/DragDropProvider';
+import { AnimationProvider } from '@/components/animations/AnimationProvider';
+import { IOSDashboard } from '@/components/layout/IOSDashboard';
 
 const Index = () => {
-  // Use exact neumorphic dashboard matching the image
+  // Use iOS neumorphic layout for all devices
   return (
     <DragDropProvider>
       <AnimationProvider>
-        <ExactNeumorphicDashboard />
+        <IOSDashboard userName="Person1" partnerName="Person2" />
       </AnimationProvider>
     </DragDropProvider>
   );

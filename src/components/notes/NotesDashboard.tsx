@@ -57,11 +57,82 @@ export const NotesDashboard: React.FC<NotesDashboardProps> = ({
   const [notesWithReminders, setNotesWithReminders] = useState<Note[]>([]);
 
   useEffect(() => {
-    // Initialize with empty state
-    setNotes([]);
-    setPinnedNotes([]);
-    setRecentNotes([]);
-    setNotesWithReminders([]);
+    // Sample data for demonstration
+    const sampleNotes: Note[] = [
+      {
+        id: 'note_1',
+        title: 'Grocery List',
+        content: 'Milk, eggs, bread, apples, chicken breast',
+        author: 'Jay',
+        category: 'shopping',
+        priority: 'medium',
+        isPinned: true,
+        isCompleted: false,
+        tags: ['groceries', 'food'],
+        reminderSettings: {
+          enabled: true,
+          scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+        },
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastEditedBy: 'Jay',
+        isDeleted: false,
+        version: 1
+      },
+      {
+        id: 'note_2',
+        title: 'Weekend Plans',
+        content: 'Movie night on Friday, hiking on Saturday, brunch on Sunday',
+        author: 'Prachi',
+        category: 'personal',
+        priority: 'high',
+        isPinned: false,
+        isCompleted: false,
+        tags: ['weekend', 'plans'],
+        reminderSettings: {
+          enabled: true,
+          scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          repeatPattern: {
+            type: 'weekly',
+            interval: 1
+          }
+        },
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastEditedBy: 'Prachi',
+        isDeleted: false,
+        version: 1
+      },
+      {
+        id: 'note_3',
+        title: 'Project Ideas',
+        content: 'Build a mobile app for couples, create a shared photo album',
+        author: 'Jay',
+        category: 'ideas',
+        priority: 'low',
+        isPinned: false,
+        isCompleted: false,
+        tags: ['projects', 'ideas'],
+        reminderSettings: {
+          enabled: false
+        },
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastEditedBy: 'Jay',
+        isDeleted: false,
+        version: 1
+      }
+    ];
+
+    setNotes(sampleNotes);
+    setPinnedNotes(sampleNotes.filter(note => note.isPinned && !note.isDeleted));
+    setRecentNotes(sampleNotes.filter(note => !note.isDeleted).slice(0, 3));
+    setNotesWithReminders(sampleNotes.filter(note => 
+      note.reminderSettings.enabled && 
+      note.reminderSettings.scheduledTime && 
+      !note.isCompleted && 
+      !note.isDeleted
+    ));
   }, []);
 
   const getPartnerColor = (partner: 'Jay' | 'Prachi', type: 'primary' | 'secondary' | 'border' | 'text' | 'glow' | 'avatar' | 'popup' | 'button' = 'primary') => {

@@ -1,56 +1,46 @@
 import React from 'react';
+import { Input, InputProps } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-interface NeumorphicInputProps {
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+interface NeumorphicInputProps extends Omit<InputProps, 'className'> {
+  variant?: 'default' | 'search' | 'large';
   className?: string;
-  type?: 'text' | 'search';
   icon?: React.ReactNode;
-  variant?: 'elevated' | 'pressed';
 }
 
 export const NeumorphicInput: React.FC<NeumorphicInputProps> = ({
-  placeholder,
-  value,
-  onChange,
-  className = '',
-  type = 'text',
+  className,
+  variant = 'default',
   icon,
-  variant = 'elevated'
+  ...props
 }) => {
-  const theme = 'light'; // Default theme for now
+  const variants = {
+    default: 'bg-gray-100 text-gray-800 placeholder:text-gray-500 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.1),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] focus:shadow-[inset_6px_6px_12px_rgba(0,0,0,0.15),inset_-6px_-6px_12px_rgba(255,255,255,0.9)]',
+    search: 'bg-gray-100 text-gray-800 placeholder:text-gray-500 shadow-[inset_4px_4px_8px_rgba(0,0,0,0.1),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] focus:shadow-[inset_6px_6px_12px_rgba(0,0,0,0.15),inset_-6px_-6px_12px_rgba(255,255,255,0.9)] pl-10',
+    large: 'bg-gray-100 text-gray-800 placeholder:text-gray-500 shadow-[inset_6px_6px_12px_rgba(0,0,0,0.1),inset_-6px_-6px_12px_rgba(255,255,255,0.8)] focus:shadow-[inset_8px_8px_16px_rgba(0,0,0,0.15),inset_-8px_-8px_16px_rgba(255,255,255,0.9)] text-lg',
+  };
 
-  const getVariantStyles = () => {
-    if (variant === 'pressed') {
-      return theme === 'dark'
-        ? 'bg-gray-800 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.8),inset_-2px_-2px_4px_rgba(255,255,255,0.1)]'
-        : 'bg-gray-100 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]';
-    }
-    return theme === 'dark'
-      ? 'bg-gray-800 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.8)]'
-      : 'bg-gray-100 shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(0,0,0,0.1)]';
+  const sizeClasses = {
+    default: 'h-10 px-4 rounded-2xl',
+    search: 'h-10 px-4 rounded-2xl',
+    large: 'h-12 px-6 rounded-3xl',
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className="relative">
       {icon && (
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
           {icon}
         </div>
       )}
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        className={`
-          w-full px-4 py-3 rounded-xl border-0 outline-none transition-all duration-200
-          ${getVariantStyles()}
-          ${icon ? 'pl-10' : ''}
-          ${theme === 'dark' ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'}
-          focus:shadow-lg
-        `}
+      <Input
+        className={cn(
+          'border-0 transition-all duration-300 ease-out focus:ring-0',
+          variants[variant],
+          sizeClasses[variant],
+          className
+        )}
+        {...props}
       />
     </div>
   );

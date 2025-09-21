@@ -447,11 +447,171 @@ class BucketListService {
     }
   }
 
-  // Initialize with empty state
+  // Sample Data
   private initializeSampleData() {
-    // No sample data - start with empty state
     if (this.items.length === 0) {
-      this.items = [];
+      const sampleItems: BucketListItem[] = [
+        {
+          id: 'bucket_1',
+          title: 'Visit the Northern Lights together',
+          description: 'Experience the magical aurora borealis in Iceland or Norway with Person2',
+          category: 'travel',
+          priority: 'dream',
+          status: 'not-started',
+          progress: 0,
+          targetDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedCost: 5000,
+          currency: 'USD',
+          location: 'Iceland',
+          tags: ['romantic', 'nature', 'photography', 'winter'],
+          assignedTo: [this.currentUser, this.partnerUser],
+          subtasks: [
+            { id: 'sub_1', title: 'Research best viewing locations', completed: false, createdAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_2', title: 'Save money for the trip', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_3', title: 'Book flights and accommodation', completed: false, createdAt: new Date().toISOString(), assignedTo: this.currentUser }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.currentUser,
+          isDeleted: false,
+          isShared: true,
+          notes: 'This has been our dream for years. Need to plan for the best time of year to see the lights.',
+          inspiration: 'We both love nature and want to experience something truly magical together',
+          difficulty: 'medium',
+          timeRequired: 'weeks'
+        },
+        {
+          id: 'bucket_2',
+          title: 'Learn to cook a traditional Indian feast',
+          description: 'Master the art of making biryani, dal, and other traditional dishes',
+          category: 'learning',
+          priority: 'medium',
+          status: 'in-progress',
+          progress: 30,
+          targetDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedCost: 200,
+          currency: 'USD',
+          location: 'Home',
+          tags: ['cooking', 'culture', 'family', 'tradition'],
+          assignedTo: [this.partnerUser],
+          subtasks: [
+            { id: 'sub_4', title: 'Find authentic recipes', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_5', title: 'Buy necessary spices and ingredients', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_6', title: 'Practice making dal', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_7', title: 'Master biryani technique', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_8', title: 'Host a dinner party', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          isDeleted: false,
+          isShared: true,
+          notes: 'Grandma\'s recipes are the best. Need to call her for tips.',
+          inspiration: 'Want to connect with my cultural roots and share authentic flavors with Person1',
+          difficulty: 'medium',
+          timeRequired: 'months'
+        },
+        {
+          id: 'bucket_3',
+          title: 'Run a marathon together',
+          description: 'Train and complete a full marathon as a couple',
+          category: 'health',
+          priority: 'high',
+          status: 'in-progress',
+          progress: 45,
+          targetDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedCost: 300,
+          currency: 'USD',
+          location: 'Local marathon',
+          tags: ['fitness', 'challenge', 'teamwork', 'health'],
+          assignedTo: [this.currentUser, this.partnerUser],
+          subtasks: [
+            { id: 'sub_9', title: 'Create training schedule', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_10', title: 'Buy proper running shoes', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_11', title: 'Complete 5K run', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_12', title: 'Complete 10K run', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_13', title: 'Complete half marathon', completed: false, createdAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_14', title: 'Register for full marathon', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.currentUser,
+          isDeleted: false,
+          isShared: true,
+          notes: 'Training is going well. We motivate each other to keep going.',
+          inspiration: 'Want to achieve something challenging together and improve our health',
+          difficulty: 'hard',
+          timeRequired: 'months'
+        },
+        {
+          id: 'bucket_4',
+          title: 'Write and publish a book together',
+          description: 'Collaborate on writing a book about our relationship journey',
+          category: 'goals',
+          priority: 'medium',
+          status: 'not-started',
+          progress: 5,
+          targetDate: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedCost: 1000,
+          currency: 'USD',
+          location: 'Home office',
+          tags: ['writing', 'creativity', 'storytelling', 'legacy'],
+          assignedTo: [this.currentUser, this.partnerUser],
+          subtasks: [
+            { id: 'sub_15', title: 'Outline book structure', completed: false, createdAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_16', title: 'Research publishing options', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_17', title: 'Write first chapter', completed: false, createdAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_18', title: 'Edit and revise content', completed: false, createdAt: new Date().toISOString(), assignedTo: this.partnerUser }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          isDeleted: false,
+          isShared: true,
+          notes: 'This is a long-term project. Need to set aside dedicated writing time.',
+          inspiration: 'Our story might inspire other couples. Want to document our journey.',
+          difficulty: 'hard',
+          timeRequired: 'years'
+        },
+        {
+          id: 'bucket_5',
+          title: 'Learn to dance salsa together',
+          description: 'Take salsa dancing lessons and perform at a social event',
+          category: 'experiences',
+          priority: 'low',
+          status: 'completed',
+          progress: 100,
+          targetDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedCost: 400,
+          currency: 'USD',
+          location: 'Dance studio',
+          tags: ['dancing', 'romance', 'fun', 'social'],
+          assignedTo: [this.currentUser, this.partnerUser],
+          subtasks: [
+            { id: 'sub_19', title: 'Find a good dance instructor', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_20', title: 'Take 10 beginner lessons', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser },
+            { id: 'sub_21', title: 'Practice at home', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.currentUser },
+            { id: 'sub_22', title: 'Perform at social dance night', completed: true, createdAt: new Date().toISOString(), completedAt: new Date().toISOString(), assignedTo: this.partnerUser }
+          ],
+          attachments: [],
+          createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          completedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          isDeleted: false,
+          isShared: true,
+          notes: 'We had so much fun! Planning to continue with more advanced classes.',
+          inspiration: 'Always wanted to learn to dance together. It brought us closer.',
+          difficulty: 'medium',
+          timeRequired: 'months'
+        }
+      ];
+
+      this.items = sampleItems;
       this.saveItems();
     }
   }

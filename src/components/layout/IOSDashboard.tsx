@@ -75,31 +75,10 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Upload Design', completed: true, category: 'work', priority: 'high' },
-    { id: 2, text: 'Groceries', completed: false, category: 'household', priority: 'medium' },
-    { id: 3, text: 'Prepare PPT', completed: false, category: 'work', priority: 'high' },
-    { id: 4, text: 'Check emails', completed: true, category: 'work', priority: 'low' },
-    { id: 5, text: 'Call Person1', completed: false, category: 'relationship', priority: 'medium' },
-  ]);
-
-  const [notes, setNotes] = useState([
-    { id: 1, title: 'Random', content: "You've got this! One step at a time.", category: 'random', starred: false },
-    { id: 2, title: 'Brainstorm Idea', content: "What if we introduced a loyalty rewards...", category: 'brainstorm', starred: true },
-    { id: 3, title: 'Bucket List', content: "Visit Japan together next year", category: 'bucket', starred: false },
-  ]);
-
-  const [schedule, setSchedule] = useState([
-    { id: 1, time: '10:00 AM', event: 'Client meeting', type: 'work', duration: '1h' },
-    { id: 2, time: '12:00 PM', event: 'UIUX Webinar', type: 'work', duration: '2h' },
-    { id: 3, time: '7:00 PM', event: 'Date night', type: 'relationship', duration: '3h' },
-  ]);
-
-  const [expenses, setExpenses] = useState([
-    { id: 1, category: 'Groceries', amount: 120, date: 'Today', trend: 'up' },
-    { id: 2, category: 'Rent', amount: 1500, date: 'Due in 3 days', trend: 'stable' },
-    { id: 3, category: 'Entertainment', amount: 80, date: 'Yesterday', trend: 'down' },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+  const [expenses, setExpenses] = useState([]);
 
   // Modal states
   const [showAddTask, setShowAddTask] = useState(false);
@@ -155,9 +134,9 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
   
   // Streak tracking
   const [streaks, setStreaks] = useState({
-    dailyCheckIn: 7,
-    tasksCompleted: 12,
-    notesShared: 5,
+    dailyCheckIn: 0,
+    tasksCompleted: 0,
+    notesShared: 0,
     lastCheckIn: new Date().toISOString()
   });
 
@@ -816,58 +795,66 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
               />
             </div>
             <div className="space-y-3">
-              {tasks.map((task) => (
-                <div 
-                  key={task.id} 
-                  className="flex items-center justify-between group cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors min-h-[60px]"
-                  onClick={() => toggleTask(task.id)}
-                >
-                  <div className="flex items-center space-x-3 flex-1 min-w-0">
-                    <NeumorphicToggle
-                      checked={task.completed}
-                      onChange={() => toggleTask(task.id)}
-                      size="sm"
-                      color="blue"
-                      className="flex-shrink-0"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <span className={`text-sm sm:text-base font-medium block ${
-                        task.completed ? 'text-gray-500 line-through' : 'text-gray-900'
-                      }`}>
-                        {task.text}
-                      </span>
-                      <div className="flex items-center space-x-2 mt-1 flex-wrap">
-                        <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(task.category)}`}>
-                          {task.category}
+              {tasks.length === 0 ? (
+                <div className="text-center py-8">
+                  <CheckSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No tasks yet</p>
+                  <p className="text-gray-400 text-xs">Add your first task to get started</p>
+                </div>
+              ) : (
+                tasks.map((task) => (
+                  <div 
+                    key={task.id} 
+                    className="flex items-center justify-between group cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors min-h-[60px]"
+                    onClick={() => toggleTask(task.id)}
+                  >
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                      <NeumorphicToggle
+                        checked={task.completed}
+                        onChange={() => toggleTask(task.id)}
+                        size="sm"
+                        color="blue"
+                        className="flex-shrink-0"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <span className={`text-sm sm:text-base font-medium block ${
+                          task.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+                        }`}>
+                          {task.text}
                         </span>
-                        <span className={`text-xs ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
+                        <div className="flex items-center space-x-2 mt-1 flex-wrap">
+                          <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(task.category)}`}>
+                            {task.category}
+                          </span>
+                          <span className={`text-xs ${getPriorityColor(task.priority)}`}>
+                            {task.priority}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <NeumorphicButton 
+                        variant="secondary" 
+                        size="sm"
+                        icon={<Edit className="h-3 w-3" />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditTask(task.id);
+                        }}
+                      />
+                      <NeumorphicButton 
+                        variant="danger" 
+                        size="sm"
+                        icon={<X className="h-3 w-3" />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteTask(task.id);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <NeumorphicButton 
-                      variant="secondary" 
-                      size="sm"
-                      icon={<Edit className="h-3 w-3" />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditTask(task.id);
-                      }}
-                    />
-                    <NeumorphicButton 
-                      variant="danger" 
-                      size="sm"
-                      icon={<X className="h-3 w-3" />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteTask(task.id);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </NeumorphicCard>
 
@@ -886,39 +873,47 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
               />
             </div>
             <div className="space-y-3">
-              {notes.map((note) => (
-                <div key={note.id} className="group">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-sm font-semibold text-gray-900">{note.title}</h4>
-                      <button
-                        onClick={() => toggleStar(note.id)}
-                        className="text-yellow-500 hover:text-yellow-600 transition-colors"
-                      >
-                        <Star className={`h-4 w-4 ${note.starred ? 'fill-current' : ''}`} />
-                      </button>
-                    </div>
-                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <NeumorphicButton 
-                        variant="secondary" 
-                        size="sm"
-                        icon={<Edit className="h-3 w-3" />}
-                        onClick={() => startEditNote(note.id)}
-                      />
-                      <NeumorphicButton 
-                        variant="danger" 
-                        size="sm"
-                        icon={<X className="h-3 w-3" />}
-                        onClick={() => deleteNote(note.id)}
-                      />
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">{note.content}</p>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(note.category)}`}>
-                    {note.category}
-                  </span>
+              {notes.length === 0 ? (
+                <div className="text-center py-8">
+                  <StickyNote className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No notes yet</p>
+                  <p className="text-gray-400 text-xs">Add your first note to get started</p>
                 </div>
-              ))}
+              ) : (
+                notes.map((note) => (
+                  <div key={note.id} className="group">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-sm font-semibold text-gray-900">{note.title}</h4>
+                        <button
+                          onClick={() => toggleStar(note.id)}
+                          className="text-yellow-500 hover:text-yellow-600 transition-colors"
+                        >
+                          <Star className={`h-4 w-4 ${note.starred ? 'fill-current' : ''}`} />
+                        </button>
+                      </div>
+                      <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <NeumorphicButton 
+                          variant="secondary" 
+                          size="sm"
+                          icon={<Edit className="h-3 w-3" />}
+                          onClick={() => startEditNote(note.id)}
+                        />
+                        <NeumorphicButton 
+                          variant="danger" 
+                          size="sm"
+                          icon={<X className="h-3 w-3" />}
+                          onClick={() => deleteNote(note.id)}
+                        />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{note.content}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(note.category)}`}>
+                      {note.category}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </NeumorphicCard>
         </div>
@@ -940,36 +935,44 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
               />
             </div>
             <div className="space-y-3">
-              {schedule.map((item) => (
-                <div key={item.id} className="group">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-sm font-medium text-gray-900">{item.time}</div>
-                      <div>
-                        <div className="text-sm font-semibold text-gray-900">{item.event}</div>
-                        <div className="text-xs text-gray-700">{item.duration}</div>
+              {schedule.length === 0 ? (
+                <div className="text-center py-8">
+                  <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No events scheduled</p>
+                  <p className="text-gray-400 text-xs">Add your first event to get started</p>
+                </div>
+              ) : (
+                schedule.map((item) => (
+                  <div key={item.id} className="group">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-sm font-medium text-gray-900">{item.time}</div>
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">{item.event}</div>
+                          <div className="text-xs text-gray-700">{item.duration}</div>
+                        </div>
+                      </div>
+                      <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <NeumorphicButton 
+                          variant="secondary" 
+                          size="sm"
+                          icon={<Edit className="h-3 w-3" />}
+                          onClick={() => startEditEvent(item.id)}
+                        />
+                        <NeumorphicButton 
+                          variant="danger" 
+                          size="sm"
+                          icon={<X className="h-3 w-3" />}
+                          onClick={() => deleteEvent(item.id)}
+                        />
                       </div>
                     </div>
-                    <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <NeumorphicButton 
-                        variant="secondary" 
-                        size="sm"
-                        icon={<Edit className="h-3 w-3" />}
-                        onClick={() => startEditEvent(item.id)}
-                      />
-                      <NeumorphicButton 
-                        variant="danger" 
-                        size="sm"
-                        icon={<X className="h-3 w-3" />}
-                        onClick={() => deleteEvent(item.id)}
-                      />
-                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(item.type)}`}>
+                      {item.type}
+                    </span>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(item.type)}`}>
-                    {item.type}
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </NeumorphicCard>
 
@@ -988,33 +991,41 @@ export const IOSDashboard: React.FC<IOSDashboardProps> = ({
               />
             </div>
             <div className="space-y-3">
-              {expenses.map((expense) => (
-                <div key={expense.id} className="group">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-semibold text-gray-900">{expense.category}</div>
-                      <div className="text-xs text-gray-700">{expense.date}</div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-sm font-bold text-gray-900">${expense.amount}</div>
-                      <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <NeumorphicButton 
-                          variant="secondary" 
-                          size="sm"
-                          icon={<Edit className="h-3 w-3" />}
-                          onClick={() => startEditExpense(expense.id)}
-                        />
-                        <NeumorphicButton 
-                          variant="danger" 
-                          size="sm"
-                          icon={<X className="h-3 w-3" />}
-                          onClick={() => deleteExpense(expense.id)}
-                        />
+              {expenses.length === 0 ? (
+                <div className="text-center py-8">
+                  <DollarSign className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No expenses recorded</p>
+                  <p className="text-gray-400 text-xs">Add your first expense to get started</p>
+                </div>
+              ) : (
+                expenses.map((expense) => (
+                  <div key={expense.id} className="group">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900">{expense.category}</div>
+                        <div className="text-xs text-gray-700">{expense.date}</div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-sm font-bold text-gray-900">${expense.amount}</div>
+                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <NeumorphicButton 
+                            variant="secondary" 
+                            size="sm"
+                            icon={<Edit className="h-3 w-3" />}
+                            onClick={() => startEditExpense(expense.id)}
+                          />
+                          <NeumorphicButton 
+                            variant="danger" 
+                            size="sm"
+                            icon={<X className="h-3 w-3" />}
+                            onClick={() => deleteExpense(expense.id)}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </NeumorphicCard>
         </div>

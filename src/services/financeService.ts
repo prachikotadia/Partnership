@@ -861,19 +861,88 @@ class FinanceService {
     }
   }
 
-  // Initialize with empty state
+  // Sample Data
   private initializeSampleData() {
-    // No sample data - start with empty state
     if (this.expenses.length === 0) {
-      this.expenses = [];
+      const sampleExpenses: Expense[] = [
+        {
+          id: 'expense_1',
+          category: 'groceries',
+          amount: 150,
+          currency: 'USD',
+          date: new Date().toISOString(),
+          paidBy: this.currentUser,
+          notes: 'Weekly grocery shopping',
+          attachments: [],
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.currentUser,
+          isDeleted: false
+        },
+        {
+          id: 'expense_2',
+          category: 'rent',
+          amount: 1200,
+          currency: 'USD',
+          date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          paidBy: this.partnerUser,
+          notes: 'Monthly rent payment',
+          attachments: [],
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: this.partnerUser,
+          isDeleted: false
+        }
+      ];
+
+      this.expenses = sampleExpenses;
     }
 
     if (this.budgets.length === 0) {
-      this.budgets = [];
+      const sampleBudget: Budget = {
+        id: 'budget_1',
+        name: 'Monthly Budget',
+        totalAmount: 3000,
+        currency: 'USD',
+        period: 'monthly',
+        categories: {
+          rent: 1200,
+          groceries: 400,
+          transport: 200,
+          entertainment: 300,
+          utilities: 150,
+          misc: 750
+        },
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: this.currentUser,
+        isDeleted: false
+      };
+
+      this.budgets = [sampleBudget];
     }
 
     if (this.savingsGoals.length === 0) {
-      this.savingsGoals = [];
+      const sampleGoal: SavingsGoal = {
+        id: 'savings_1',
+        name: 'House Fund',
+        targetAmount: 50000,
+        currency: 'USD',
+        deadline: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        contributions: {
+          [this.currentUser]: 5000,
+          [this.partnerUser]: 4500
+        },
+        currentAmount: 9500,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: this.currentUser,
+        isDeleted: false
+      };
+
+      this.savingsGoals = [sampleGoal];
     }
 
     this.saveData();

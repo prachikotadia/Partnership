@@ -547,11 +547,97 @@ class ScheduleService {
     }
   }
 
-  // Initialize with empty state
+  // Sample Data
   private initializeSampleData() {
-    // No sample data - start with empty state
     if (this.scheduleItems.length === 0) {
-      this.scheduleItems = [];
+      const sampleItems: ScheduleItem[] = [
+        {
+          id: 'schedule_1',
+          title: 'Client Meeting',
+          description: 'Discuss project requirements with ABC Corp',
+          startDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+          endDate: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+          allDay: false,
+          location: 'Conference Room A',
+          reminderSettings: {
+            enabled: true,
+            minutesBefore: 15,
+            hoursBefore: 0,
+            daysBefore: 0
+          },
+          assignedPartners: ['Person1'],
+          createdBy: 'Person1',
+          priority: 'high',
+          category: 'work',
+          tags: ['meeting', 'client'],
+          attachments: [],
+          mood: 'neutral',
+          isCompleted: false,
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          isDeleted: false
+        },
+        {
+          id: 'schedule_2',
+          title: 'Dinner Date',
+          description: 'Anniversary dinner at our favorite restaurant',
+          startDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+          endDate: new Date(Date.now() + 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
+          allDay: false,
+          location: 'The Garden Restaurant',
+          reminderSettings: {
+            enabled: true,
+            minutesBefore: 0,
+            hoursBefore: 1,
+            daysBefore: 0
+          },
+          assignedPartners: ['Person1', 'Person2'],
+          createdBy: 'Person2',
+          priority: 'high',
+          category: 'social',
+          tags: ['anniversary', 'dinner'],
+          attachments: [],
+          mood: 'excited',
+          isCompleted: false,
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          isDeleted: false
+        },
+        {
+          id: 'schedule_3',
+          title: 'Weekly Team Standup',
+          description: 'Daily standup with the development team',
+          startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Next week
+          endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(),
+          allDay: false,
+          location: 'Zoom Meeting',
+          reminderSettings: {
+            enabled: true,
+            minutesBefore: 5,
+            hoursBefore: 0,
+            daysBefore: 0
+          },
+          repeatPattern: {
+            type: 'weekly',
+            interval: 1,
+            daysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          assignedPartners: ['Person1'],
+          createdBy: 'Person1',
+          priority: 'medium',
+          category: 'work',
+          tags: ['standup', 'team'],
+          attachments: [],
+          mood: 'neutral',
+          isCompleted: false,
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          updatedAt: new Date().toISOString(),
+          isDeleted: false
+        }
+      ];
+
+      this.scheduleItems = sampleItems;
       this.saveScheduleItems();
     }
   }

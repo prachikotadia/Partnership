@@ -25,7 +25,7 @@ import {
 interface Task {
   id: string;
   title: string;
-  assignee: 'Person1' | 'Person2';
+  assignee: 'Alex' | 'Sam';
   priority: 'low' | 'medium' | 'high';
   category: string;
   completed: boolean;
@@ -34,7 +34,55 @@ interface Task {
 }
 
 export function TaskManager() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: '1',
+      title: 'Buy groceries for weekend',
+      assignee: 'Sam',
+      priority: 'high',
+      category: 'Household',
+      completed: false,
+      createdAt: new Date(),
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    },
+    {
+      id: '2',
+      title: 'Book flight tickets to Paris',
+      assignee: 'Alex',
+      priority: 'medium',
+      category: 'Travel',
+      completed: true,
+      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    },
+    {
+      id: '3',
+      title: 'Plan anniversary dinner',
+      assignee: 'Sam',
+      priority: 'high',
+      category: 'Relationship',
+      completed: false,
+      createdAt: new Date(),
+      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    },
+    {
+      id: '4',
+      title: 'Research new apartment',
+      assignee: 'Alex',
+      priority: 'medium',
+      category: 'Life',
+      completed: false,
+      createdAt: new Date(),
+    },
+    {
+      id: '5',
+      title: 'Update budget spreadsheet',
+      assignee: 'Sam',
+      priority: 'low',
+      category: 'Finance',
+      completed: false,
+      createdAt: new Date(),
+    },
+  ]);
 
   const [newTask, setNewTask] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
@@ -56,7 +104,7 @@ export function TaskManager() {
       const task: Task = {
         id: Date.now().toString(),
         title: newTask,
-        assignee: 'Person1',
+        assignee: 'Alex',
         priority: 'medium',
         category: 'General',
         completed: false,
