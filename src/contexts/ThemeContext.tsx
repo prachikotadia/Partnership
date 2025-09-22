@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface ThemeContextType {
   theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
   toggleTheme: () => void;
 }
 
@@ -10,7 +11,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    // Return a default theme instead of throwing an error
+    console.warn('useTheme must be used within a ThemeProvider, using default theme');
+    return {
+      theme: 'light' as const,
+      setTheme: () => {},
+      toggleTheme: () => {}
+    };
   }
   return context;
 };
@@ -48,6 +55,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const value = {
     theme,
+    setTheme,
     toggleTheme,
   };
 
