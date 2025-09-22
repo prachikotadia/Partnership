@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from './LoginForm';
+import { SimpleLoginForm } from './SimpleLoginForm';
 import { RegisterForm } from './RegisterForm';
 import { PasswordResetFlow } from './PasswordResetFlow';
 import { 
@@ -66,8 +67,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ className = '' }) => {
   const renderForm = () => {
     switch (mode) {
       case 'login':
+        // Use simple form as fallback to avoid theme context errors
         return (
-          <LoginForm
+          <SimpleLoginForm
             onSwitchToRegister={() => setMode('register')}
             onSwitchToForgotPassword={() => setMode('forgot-password')}
           />

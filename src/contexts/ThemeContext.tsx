@@ -8,18 +8,17 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Create a default theme object to avoid errors
+const DEFAULT_THEME: ThemeContextType = {
+  theme: 'light',
+  setTheme: () => {},
+  toggleTheme: () => {}
+};
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
-    // Return a default theme instead of throwing an error
-    console.warn('useTheme must be used within a ThemeProvider, using default theme');
-    return {
-      theme: 'light' as const,
-      setTheme: () => {},
-      toggleTheme: () => {}
-    };
-  }
-  return context;
+  // Always return a valid theme object, never throw
+  return context || DEFAULT_THEME;
 };
 
 interface ThemeProviderProps {
