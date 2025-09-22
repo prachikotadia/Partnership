@@ -10,19 +10,19 @@
 
 DO $$
 DECLARE
-    table_name TEXT;
+    current_table TEXT;
     column_exists BOOLEAN;
     expected_tables TEXT[] := ARRAY['tasks', 'notes', 'check_ins', 'finance_entries', 'schedule_items', 'bucket_list_items', 'notifications', 'login_sessions', 'login_history'];
 BEGIN
     RAISE NOTICE '🔍 Checking table structures for user_id columns...';
     
-    FOREACH table_name IN ARRAY expected_tables
+    FOREACH current_table IN ARRAY expected_tables
     LOOP
         -- Check if table exists
         SELECT EXISTS (
             SELECT FROM information_schema.tables 
             WHERE table_schema = 'public' 
-            AND table_name = table_name
+            AND table_name = current_table
         ) INTO column_exists;
         
         IF column_exists THEN
@@ -30,17 +30,17 @@ BEGIN
             SELECT EXISTS (
                 SELECT FROM information_schema.columns 
                 WHERE table_schema = 'public' 
-                AND table_name = table_name 
+                AND table_name = current_table 
                 AND column_name = 'user_id'
             ) INTO column_exists;
             
             IF column_exists THEN
-                RAISE NOTICE '✅ Table % has user_id column', table_name;
+                RAISE NOTICE '✅ Table % has user_id column', current_table;
             ELSE
-                RAISE NOTICE '❌ Table % missing user_id column', table_name;
+                RAISE NOTICE '❌ Table % missing user_id column', current_table;
             END IF;
         ELSE
-            RAISE NOTICE '⚠️  Table % does not exist', table_name;
+            RAISE NOTICE '⚠️  Table % does not exist', current_table;
         END IF;
     END LOOP;
 END $$;
@@ -214,20 +214,20 @@ CREATE INDEX IF NOT EXISTS idx_login_history_user_id ON login_history(user_id);
 
 DO $$
 DECLARE
-    table_name TEXT;
+    current_table TEXT;
     column_exists BOOLEAN;
     expected_tables TEXT[] := ARRAY['tasks', 'notes', 'check_ins', 'finance_entries', 'schedule_items', 'bucket_list_items', 'notifications', 'login_sessions', 'login_history'];
     fixed_count INTEGER := 0;
 BEGIN
     RAISE NOTICE '🔍 Verifying user_id columns after fixes...';
     
-    FOREACH table_name IN ARRAY expected_tables
+    FOREACH current_table IN ARRAY expected_tables
     LOOP
         -- Check if table exists
         SELECT EXISTS (
             SELECT FROM information_schema.tables 
             WHERE table_schema = 'public' 
-            AND table_name = table_name
+            AND table_name = current_table
         ) INTO column_exists;
         
         IF column_exists THEN
@@ -235,18 +235,18 @@ BEGIN
             SELECT EXISTS (
                 SELECT FROM information_schema.columns 
                 WHERE table_schema = 'public' 
-                AND table_name = table_name 
+                AND table_name = current_table 
                 AND column_name = 'user_id'
             ) INTO column_exists;
             
             IF column_exists THEN
-                RAISE NOTICE '✅ Table % has user_id column', table_name;
+                RAISE NOTICE '✅ Table % has user_id column', current_table;
                 fixed_count := fixed_count + 1;
             ELSE
-                RAISE NOTICE '❌ Table % still missing user_id column', table_name;
+                RAISE NOTICE '❌ Table % still missing user_id column', current_table;
             END IF;
         ELSE
-            RAISE NOTICE '⚠️  Table % does not exist', table_name;
+            RAISE NOTICE '⚠️  Table % does not exist', current_table;
         END IF;
     END LOOP;
     
