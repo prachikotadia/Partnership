@@ -12,11 +12,34 @@ export const MinimalApp: React.FC = () => {
     setIsLoading(true);
     setMessage('');
 
-    // Simulate login attempt
-    setTimeout(() => {
-      setIsLoading(false);
-      setMessage('Login attempt made. Database setup required.');
-    }, 1000);
+    try {
+      // Try to authenticate with Supabase
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        'https://dobclnswdftadrqftpux.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5dCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvYmNsbnN3ZGZ0YWRycWZ0cHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NzQ4MDAsImV4cCI6MjA1MDU1MDgwMH0.5YHfrcKV1dVHNIGc4XODc9mRo0ZZ9_9FLsCPcKyTK8w'
+      );
+
+      // Try to sign in
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: username.includes('@') ? username : `${username}@example.com`,
+        password: password
+      });
+
+      if (error) {
+        setMessage(`Login failed: ${error.message}`);
+      } else {
+        setMessage('Login successful! Redirecting...');
+        // Redirect to dashboard or reload
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      setMessage('Database not set up. Please run the database script first.');
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -99,13 +122,13 @@ export const MinimalApp: React.FC = () => {
           {/* Instructions */}
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">
-              <strong>Next Steps:</strong>
+              <strong>Quick Setup:</strong>
             </p>
-            <ol className="text-xs text-gray-500 space-y-1 text-left">
-              <li>1. Run the database script in Supabase</li>
-              <li>2. Try logging in with: person1 / password123</li>
-              <li>3. The app will work once database is set up</li>
-            </ol>
+            <div className="text-xs text-gray-500 space-y-1 text-left">
+              <p>1. Go to Supabase Dashboard → SQL Editor</p>
+              <p>2. Copy and run: <code className="bg-gray-100 px-1 rounded">simple-database-setup.sql</code></p>
+              <p>3. Try login: <strong>person1</strong> / <strong>password123</strong></p>
+            </div>
           </div>
         </div>
       </div>
