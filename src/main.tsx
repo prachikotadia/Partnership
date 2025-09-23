@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
-import { MobileApp } from "./components/MobileApp.tsx";
+import SimpleApp from "./SimpleApp.tsx";
 import "./index.css";
 
-// Service worker registration removed to fix MIME type error
-
-createRoot(document.getElementById("root")!).render(<MobileApp />);
+// Completely bypass all complex components and use simple app
+createRoot(document.getElementById("root")!).render(<SimpleApp />);

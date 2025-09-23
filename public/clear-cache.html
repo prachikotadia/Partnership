@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache - Bondly Glow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .instructions ol {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Browser Cache</h1>
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <div class="instructions">
+            <h3>Follow these steps to clear your cache:</h3>
+            <ol>
+                <li><strong>Hard Refresh:</strong> Press <code>Ctrl+Shift+R</code> (Windows) or <code>Cmd+Shift+R</code> (Mac)</li>
+                <li><strong>Clear Browser Data:</strong> Press <code>Ctrl+Shift+Delete</code> (Windows) or <code>Cmd+Shift+Delete</code> (Mac)</li>
+                <li><strong>Select:</strong> "Cached images and files" and "Cookies and other site data"</li>
+                <li><strong>Time Range:</strong> "All time"</li>
+                <li><strong>Click:</strong> "Clear data"</li>
+            </ol>
+        </div>
+
+        <button onclick="clearCache()">Clear Cache Now</button>
+        <button onclick="goToApp()">Go to App</button>
+        
+        <div class="instructions">
+            <h3>If cache clearing doesn't work:</h3>
+            <ol>
+                <li>Open <strong>Developer Tools</strong> (F12)</li>
+                <li>Right-click the refresh button</li>
+                <li>Select <strong>"Empty Cache and Hard Reload"</strong></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${isError ? 'error' : 'success'}`;
+            status.style.display = 'block';
+        }
+
+        function clearCache() {
+            showStatus('Clearing cache...');
+            
+            // Clear localStorage
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                showStatus('✅ Cache cleared successfully!');
+            } catch (error) {
+                showStatus('❌ Error clearing cache: ' + error.message, true);
+            }
+        }
+
+        function goToApp() {
+            // Add cache-busting parameter
+            const timestamp = new Date().getTime();
+            window.location.href = `/?v=${timestamp}`;
+        }
+
+        // Auto-clear on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                clearCache();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
