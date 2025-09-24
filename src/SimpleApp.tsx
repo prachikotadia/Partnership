@@ -33,11 +33,11 @@ import {
   Zap,
   BarChart3
 } from 'lucide-react';
-import { backendService } from './services/backendService';
+import { realBackendService } from './services/realBackendService';
 import demoBackendService from './services/demoBackendService';
 
 // Use demo service in production (Netlify) or real service in development
-const backendService = process.env.NODE_ENV === 'production' ? demoBackendService : backendService;
+const backendService = process.env.NODE_ENV === 'production' ? demoBackendService : realBackendService;
 import { CompleteBackendAPI } from './services/completeBackendApi';
 
 // Simple App that bypasses all complex components
