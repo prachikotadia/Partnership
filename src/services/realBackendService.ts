@@ -1,5 +1,7 @@
 // Real Backend Service - Connects to Express.js backend with PostgreSQL
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://your-backend-url.herokuapp.com/api' // Replace with your production backend URL
+  : 'http://localhost:3001/api';
 
 class RealBackendService {
   private token: string | null = null;

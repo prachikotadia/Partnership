@@ -33,7 +33,11 @@ import {
   Zap,
   BarChart3
 } from 'lucide-react';
-import { realBackendService } from './services/realBackendService';
+import { backendService } from './services/backendService';
+import demoBackendService from './services/demoBackendService';
+
+// Use demo service in production (Netlify) or real service in development
+const backendService = process.env.NODE_ENV === 'production' ? demoBackendService : backendService;
 import { CompleteBackendAPI } from './services/completeBackendApi';
 
 // Simple App that bypasses all complex components
@@ -181,7 +185,7 @@ const SimpleApp = () => {
 
     try {
       // Use real backend authentication
-      const result = await realBackendService.login(username, password);
+      const result = await backendService.login(username, password);
       if (result && result.user) {
         setUser(result.user);
       setMessage('Login successful! Welcome to Bondly Glow!');
@@ -201,7 +205,7 @@ const SimpleApp = () => {
 
   const handleLogout = async () => {
     try {
-      await realBackendService.logout();
+      await backendService.logout();
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -215,8 +219,8 @@ const SimpleApp = () => {
     try {
       // Load notifications and streak from backend
       const [notifications, streakData] = await Promise.all([
-        realBackendService.getNotifications(),
-        realBackendService.getUserStreak()
+        backendService.getNotifications(),
+        backendService.getUserStreak()
       ]);
 
       // Update state with backend data
@@ -232,15 +236,15 @@ const SimpleApp = () => {
     const token = localStorage.getItem('auth_token');
     if (token) {
       // Set the token in the service
-      realBackendService.setToken(token);
+      backendService.setToken(token);
       // Try to get user info to validate the token
-      realBackendService.getUserInfo().then(userInfo => {
+      backendService.getUserInfo().then(userInfo => {
         if (userInfo) {
           setUser(userInfo);
         }
       }).catch(() => {
         // Token is invalid, clear it
-        realBackendService.clearToken();
+        backendService.clearToken();
         localStorage.removeItem('auth_token');
       });
     }
@@ -459,7 +463,7 @@ const Dashboard = ({
         
         // Load notes FIRST and separately to debug
         console.log('📝 Loading notes...');
-        const notes = await realBackendService.getNotes();
+        const notes = await backendService.getNotes();
         console.log('📝 RAW NOTES FROM API:', notes);
         console.log('📝 NUMBER OF NOTES:', notes.length);
         
@@ -480,17 +484,17 @@ const Dashboard = ({
         
         // Load other data
       const [tasks, bucketList, timelineEntries, streakData, financeTransactions, financeSummary, persons] = await Promise.all([
-        realBackendService.getTasks().catch(() => []),
-        realBackendService.getBucketItems().catch(() => []),
-        realBackendService.getTimelineEntries().catch(() => []),
-        realBackendService.getStreak().catch(() => null),
-        realBackendService.getFinanceTransactions(displayCurrency, currentPerson).catch(() => []),
-        realBackendService.getFinanceSummary(displayCurrency, currentPerson).catch(() => ({
+        backendService.getTasks().catch(() => []),
+        backendService.getBucketItems().catch(() => []),
+        backendService.getTimelineEntries().catch(() => []),
+        backendService.getStreak().catch(() => null),
+        backendService.getFinanceTransactions(displayCurrency, currentPerson).catch(() => []),
+        backendService.getFinanceSummary(displayCurrency, currentPerson).catch(() => ({
           income: { total: 0, count: 0, currency: displayCurrency },
           expense: { total: 0, count: 0, currency: displayCurrency },
           balance: 0
         })),
-        realBackendService.getPersons().catch(() => ({
+        backendService.getPersons().catch(() => ({
           person1: { name: 'Person 1', currency_preference: 'USD' },
           person2: { name: 'Person 2', currency_preference: 'USD' }
         }))
@@ -602,7 +606,7 @@ const Dashboard = ({
   // Enhanced Task Management
   const toggleTask = async (id: number) => {
     try {
-      await realBackendService.toggleTask(id.toString());
+      await backendService.toggleTask(id.toString());
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
     ));
@@ -617,7 +621,7 @@ const Dashboard = ({
 
   const createInvite = async (inviteData: any) => {
     try {
-      const newInvite = await realBackendService.createInvite(inviteData);
+      const newInvite = await backendService.createInvite(inviteData);
       setInvites([newInvite, ...invites]);
       console.log('✅ Invite created and saved to database!');
       return newInvite;
@@ -629,7 +633,7 @@ const Dashboard = ({
 
   const loadInvites = async () => {
     try {
-      const userInvites = await realBackendService.getInvites();
+      const userInvites = await backendService.getInvites();
       setInvites(userInvites);
       console.log('✅ Invites loaded from database!');
     } catch (error) {
@@ -639,7 +643,7 @@ const Dashboard = ({
 
   const joinInvite = async (joinData: { code?: string; link_token?: string }) => {
     try {
-      const result = await realBackendService.joinInvite(joinData);
+      const result = await backendService.joinInvite(joinData);
       console.log('✅ Successfully joined invite!');
       alert('Successfully joined! Welcome to the partnership!');
       return result;
@@ -652,7 +656,7 @@ const Dashboard = ({
 
   const revokeInvite = async (id: string) => {
     try {
-      await realBackendService.revokeInvite(id);
+      await backendService.revokeInvite(id);
       setInvites(invites.filter(invite => invite.id !== id));
       console.log('✅ Invite revoked successfully!');
     } catch (error) {
@@ -676,7 +680,7 @@ const Dashboard = ({
 
   const loadTimelineEntries = async () => {
     try {
-      const entries = await realBackendService.getTimelineEntries();
+      const entries = await backendService.getTimelineEntries();
       setTimelineEntries(entries);
       console.log('✅ Timeline entries loaded from database!');
     } catch (error) {
@@ -686,7 +690,7 @@ const Dashboard = ({
 
   const createTimelineEntry = async (entryData: any) => {
     try {
-      const newEntry = await realBackendService.createTimelineEntry(entryData);
+      const newEntry = await backendService.createTimelineEntry(entryData);
       setTimelineEntries([newEntry, ...timelineEntries]);
       console.log('✅ Timeline entry created and saved to database!');
       return newEntry;
@@ -698,7 +702,7 @@ const Dashboard = ({
 
   const updateTimelineEntry = async (id: string, entryData: any) => {
     try {
-      const updatedEntry = await realBackendService.updateTimelineEntry(id, entryData);
+      const updatedEntry = await backendService.updateTimelineEntry(id, entryData);
       setTimelineEntries(timelineEntries.map(entry => 
         entry.id === id ? updatedEntry : entry
       ));
@@ -712,7 +716,7 @@ const Dashboard = ({
 
   const deleteTimelineEntry = async (id: string) => {
     try {
-      await realBackendService.deleteTimelineEntry(id);
+      await backendService.deleteTimelineEntry(id);
       setTimelineEntries(timelineEntries.filter(entry => entry.id !== id));
       console.log('✅ Timeline entry deleted from database!');
     } catch (error) {
@@ -722,7 +726,7 @@ const Dashboard = ({
 
   const addTimelineReaction = async (entryId: string, reactionType: string) => {
     try {
-      await realBackendService.addTimelineReaction(entryId, reactionType);
+      await backendService.addTimelineReaction(entryId, reactionType);
       // Reload timeline entries to get updated reactions
       await loadTimelineEntries();
       console.log('✅ Reaction added to timeline entry!');
@@ -733,7 +737,7 @@ const Dashboard = ({
 
   const removeTimelineReaction = async (entryId: string, reactionType: string) => {
     try {
-      await realBackendService.removeTimelineReaction(entryId, reactionType);
+      await backendService.removeTimelineReaction(entryId, reactionType);
       // Reload timeline entries to get updated reactions
       await loadTimelineEntries();
       console.log('✅ Reaction removed from timeline entry!');
@@ -744,7 +748,7 @@ const Dashboard = ({
 
   const addTimelineComment = async (entryId: string, content: string) => {
     try {
-      await realBackendService.addTimelineComment(entryId, content);
+      await backendService.addTimelineComment(entryId, content);
       // Reload timeline entries to get updated comments
       await loadTimelineEntries();
       console.log('✅ Comment added to timeline entry!');
@@ -755,7 +759,7 @@ const Dashboard = ({
 
   const updateTimelineComment = async (commentId: string, content: string) => {
     try {
-      await realBackendService.updateTimelineComment(commentId, content);
+      await backendService.updateTimelineComment(commentId, content);
       // Reload timeline entries to get updated comments
       await loadTimelineEntries();
       console.log('✅ Comment updated!');
@@ -766,7 +770,7 @@ const Dashboard = ({
 
   const deleteTimelineComment = async (commentId: string) => {
     try {
-      await realBackendService.deleteTimelineComment(commentId);
+      await backendService.deleteTimelineComment(commentId);
       // Reload timeline entries to get updated comments
       await loadTimelineEntries();
       console.log('✅ Comment deleted!');
@@ -781,7 +785,7 @@ const Dashboard = ({
 
   const loadStreak = async () => {
     try {
-      const streakData = await realBackendService.getStreak();
+      const streakData = await backendService.getStreak();
       setStreak(streakData);
       console.log('✅ Streak loaded from database!');
     } catch (error) {
@@ -794,7 +798,7 @@ const Dashboard = ({
     
     setStreakLoading(true);
     try {
-      const result = await realBackendService.clickStreak();
+      const result = await backendService.clickStreak();
       setStreak(result.streak);
       
       // Show success message with animation
@@ -832,7 +836,7 @@ const Dashboard = ({
 
   const addTask = async () => {
     try {
-      const newTask = await realBackendService.createTask({
+      const newTask = await backendService.createTask({
         name: newItem.title || 'New task',
         description: newItem.description || '',
         priority: newItem.priority || 'Medium',
@@ -877,7 +881,7 @@ const Dashboard = ({
   // Bucket List Management
   const toggleBucketItem = async (id: number) => {
     try {
-      await realBackendService.toggleBucketItem(id.toString());
+      await backendService.toggleBucketItem(id.toString());
       setBucketList(bucketList.map(item => 
         item.id === id ? { ...item, completed: !item.completed } : item
       ));
@@ -896,7 +900,7 @@ const Dashboard = ({
         target_date: new Date().toISOString().split('T')[0]
       };
       
-      const createdItem = await realBackendService.createBucketItem(newBucketItem);
+      const createdItem = await backendService.createBucketItem(newBucketItem);
       setBucketList([...bucketList, { ...createdItem, id: createdItem.id }]);
       setNewItem({ title: '', description: '', category: '', priority: 'medium', amount: '', type: 'expense', dueDate: '', dueTime: '', moneyRequired: '', currency: 'USD', assignedTo: '', assignedBy: '', expirationDays: '', maxUses: '', timelineContent: '', timelineVisibility: 'private' });
       setShowAddModal(false);
@@ -907,7 +911,7 @@ const Dashboard = ({
 
   const deleteBucketItem = async (id: number) => {
     try {
-      await realBackendService.deleteBucketItem(id.toString());
+      await backendService.deleteBucketItem(id.toString());
       setBucketList(bucketList.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error deleting bucket item:', error);
@@ -941,7 +945,7 @@ const Dashboard = ({
       };
       
       console.log('📝 Creating note in database:', newNote);
-      const createdNote = await realBackendService.createNote(newNote);
+      const createdNote = await backendService.createNote(newNote);
       
       // Update local state with the created note from database
       setNotes([...notes, {
@@ -966,7 +970,7 @@ const Dashboard = ({
   const deleteNote = async (noteId) => {
     try {
       console.log(`📝 Deleting note ${noteId} from database`);
-      await realBackendService.deleteNote(noteId);
+      await backendService.deleteNote(noteId);
       
       // Update local state
       setNotes(notes.filter(note => note.id !== noteId));
@@ -1028,7 +1032,7 @@ const Dashboard = ({
       console.log(`💱 Loading finance data for ${currentPerson} with display currency: ${displayCurrency}`);
       
       // Get all transactions for current person (without conversion first)
-      const transactions = await realBackendService.getFinanceTransactions('USD', currentPerson);
+      const transactions = await backendService.getFinanceTransactions('USD', currentPerson);
       console.log(`💰 Raw transactions for ${currentPerson}:`, transactions);
       
       // Convert each transaction to display currency using REAL API
@@ -1046,7 +1050,7 @@ const Dashboard = ({
           
           try {
             console.log(`💱 Converting ${transaction.amount} ${transaction.currency} → ${displayCurrency}`);
-            const conversion = await realBackendService.convertCurrency(
+            const conversion = await backendService.convertCurrency(
               parseFloat(transaction.amount),
               transaction.currency,
               displayCurrency
@@ -1113,7 +1117,7 @@ const Dashboard = ({
 
   const addFinanceTransaction = async () => {
     try {
-      const newTransaction = await realBackendService.createFinanceTransaction({
+      const newTransaction = await backendService.createFinanceTransaction({
         title: newItem.title || 'New Transaction',
         amount: parseFloat(newItem.amount) || 0,
         currency: newItem.currency || 'USD',
@@ -1136,7 +1140,7 @@ const Dashboard = ({
 
   const deleteFinanceTransaction = async (id: number) => {
     try {
-      await realBackendService.deleteFinanceTransaction(id);
+      await backendService.deleteFinanceTransaction(id);
       setFinanceTransactions(financeTransactions.filter(t => t.id !== id));
       await loadFinanceData(); // Refresh summary
       console.log('✅ Finance transaction deleted from database!');
@@ -1156,7 +1160,7 @@ const Dashboard = ({
     try {
       if (!editPersonName.trim()) return;
       
-      await realBackendService.updatePerson(personKey, editPersonName.trim());
+      await backendService.updatePerson(personKey, editPersonName.trim());
       setPersonNames(prev => ({
         ...prev,
         [personKey]: { ...prev[personKey], name: editPersonName.trim() }
