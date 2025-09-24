@@ -2,7 +2,10 @@
 nixPkgs = ["nodejs", "npm"]
 
 [phases.install]
-cmds = ["npm ci --only=production"]
+cmds = [
+  "rm -f bun.lockb yarn.lock pnpm-lock.yaml",
+  "npm ci --only=production"
+]
 
 [phases.build]
 cmds = ["echo 'Build phase completed'"]
@@ -12,3 +15,8 @@ cmd = "npm start"
 
 [providers]
 node = "18"
+
+[detectors]
+bun = false
+yarn = false
+pnpm = false

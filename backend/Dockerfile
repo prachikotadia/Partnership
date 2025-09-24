@@ -4,14 +4,20 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
+# Remove any existing lockfiles to prevent conflicts
+RUN rm -f bun.lockb yarn.lock pnpm-lock.yaml
+
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies with npm only
+RUN npm ci --only=production --no-audit --no-fund
 
 # Copy source code
 COPY . .
+
+# Remove any lockfiles that might have been copied
+RUN rm -f bun.lockb yarn.lock pnpm-lock.yaml
 
 # Expose port
 EXPOSE 3001
