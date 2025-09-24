@@ -16,6 +16,8 @@
 2. Click "Configure" on the detected service
 3. Set **Root Directory**: `backend`
 4. Railway will auto-detect Node.js
+5. **Build Command**: `npm install` (auto-detected)
+6. **Start Command**: `npm start` (auto-detected)
 
 ## Step 4: Add Environment Variables
 1. Go to "Variables" tab
@@ -53,3 +55,25 @@ git push origin main
 3. Netlify will auto-deploy with the new backend URL
 
 ## 🎯 That's it! Your backend will be live and free!
+
+## 🔧 Troubleshooting
+
+### If you get lockfile errors:
+1. **Delete** `package-lock.json` in the backend folder
+2. **Run** `npm install` locally
+3. **Commit** the new lockfile
+4. **Redeploy** on Railway
+
+### If deployment fails:
+1. **Check** the Railway logs
+2. **Verify** environment variables are set
+3. **Ensure** database is connected
+4. **Check** that all dependencies are in package.json
+
+### Alternative: Use Render instead
+If Railway doesn't work, try Render:
+1. **Go to**: https://render.com
+2. **Create** "Web Service"
+3. **Connect** GitHub repository
+4. **Set Root Directory**: `backend`
+5. **Deploy** with same environment variables
